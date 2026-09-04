@@ -88,7 +88,7 @@ function PostCard({ post }: { post: Post }) {
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-lg transition-all bg-background border shadow-sm">
       <CardHeader>
         <Link href={`/posts/${post.id}`} className="group">
           <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">

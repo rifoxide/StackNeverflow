@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AxiosError } from 'axios';
-import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export default function NewPostPage() {

@@ -11,9 +11,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, Home, PenSquare } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Logo } from '@/components/Logo';
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -36,15 +37,17 @@ export function Navbar() {
 
   const NavLinks = () => (
     <>
-      <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
-        Feed
+      <Link href="/" className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
+        <Home className="h-4 w-4" />
+        <span>Feed</span>
       </Link>
       {isAuthenticated && (
         <Link
           href="/posts/new"
-          className="text-sm font-medium hover:text-primary transition-colors"
+          className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
         >
-          Create Post
+          <PenSquare className="h-4 w-4" />
+          <span>Create Post</span>
         </Link>
       )}
     </>
@@ -96,13 +99,22 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-            <span className="text-primary">Stack</span>
-            <span>Neverflow</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Logo className="h-9 w-9" />
+            <div className="flex flex-col">
+              <div className="font-bold text-xl leading-none">
+                <span className="text-foreground">Stack</span>
+                <span className="text-primary">Never</span>
+                <span className="text-foreground">flow</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground font-medium tracking-wide leading-tight">
+                Where your stack stays intact
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
