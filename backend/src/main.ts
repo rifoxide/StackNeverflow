@@ -1,7 +1,11 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import fastifyCookie from '@fastify/cookie';
 import { AppModule } from './app.module.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
@@ -43,8 +47,21 @@ async function bootstrap() {
     }),
   );
 
+  // Swagger/OpenAPI documentation
+  const config = new DocumentBuilder()
+    .setTitle('StackNeverflow API')
+    .setDescription('Developer community platform API')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
   const port = configService.get<number>('BACKEND_PORT', 3001);
   await app.listen(port, '0.0.0.0');
-  console.log(`Backend running on http://localhost:${port}`);
+  console.log(`Backend running on http://localhost:${String(port)}`);
+  console.log(
+    `Swagger docs available at http://localhost:${String(port)}/api/docs`,
+  );
 }
-bootstrap();
+void bootstrap();
