@@ -19,7 +19,8 @@
   },
   "lint-staged": {
     "backend/src/**/*.ts": [
-      "bash -c 'cd backend && npx eslint --fix --no-warn-ignored ${0}'"
+      "bash -c 'cd backend && npx eslint --fix --no-warn-ignored ${0}'",
+      "bash -c 'cd backend && npx vitest related --run --reporter=verbose'"
     ],
     "backend/**/*.{ts,json,md}": [
       "bash -c 'cd backend && npx prettier --write ${0}'"
