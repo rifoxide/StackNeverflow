@@ -4,8 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Skill } from './skill.entity.js';
+import { Experience } from './experience.entity.js';
 
 /**
  * User entity representing a developer in the community.
@@ -51,10 +54,9 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Relations to Skills and Experiences will be added in Step 2.1
-  // @OneToMany(() => Skill, skill => skill.user)
-  // skills: Skill[];
-  //
-  // @OneToMany(() => Experience, experience => experience.user)
-  // experiences: Experience[];
+  @OneToMany(() => Skill, (skill) => skill.user)
+  skills: Skill[];
+
+  @OneToMany(() => Experience, (experience) => experience.user)
+  experiences: Experience[];
 }

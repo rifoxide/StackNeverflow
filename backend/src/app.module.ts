@@ -7,6 +7,7 @@ import { envValidationSchema } from './config/env.validation.js';
 import { AppController } from './app.controller.js';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { DevelopersModule } from './developers/developers.module.js';
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +34,7 @@ const __dirname = dirname(__filename);
     }),
     UsersModule,
     AuthModule,
+    DevelopersModule,
   ],
   controllers: [AppController],
   providers: [],
