@@ -15,6 +15,7 @@ import { Menu, Home, PenSquare } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/Logo';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -99,7 +100,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#252728] shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
@@ -122,8 +123,9 @@ export function Navbar() {
             <NavLinks />
           </nav>
 
-          {/* Desktop Auth Section */}
-          <div className="hidden md:flex">
+          {/* Desktop Auth Section + Theme Toggle */}
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             <AuthSection />
           </div>
 
@@ -136,6 +138,10 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col gap-6 mt-6">
+                <div className="flex items-center justify-between pb-4 border-b">
+                  <span className="text-sm font-medium text-muted-foreground">Theme</span>
+                  <ThemeToggle />
+                </div>
                 <nav className="flex flex-col gap-4">
                   <Link
                     href="/"

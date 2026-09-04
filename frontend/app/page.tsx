@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ThumbsUp, ThumbsDown, MessageSquare, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -87,24 +88,38 @@ function PostCard({ post }: { post: Post }) {
     return date.toLocaleDateString();
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
-    <Card className="hover:shadow-lg transition-all bg-background border shadow-sm">
+    <Card className="hover:shadow-lg transition-all border-0 shadow-sm bg-white dark:bg-[#252728]">
       <CardHeader>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+          <Link
+            href={`/developers/${post.author.id}`}
+            className="flex items-center gap-2 hover:text-primary transition-colors"
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                {getInitials(post.author.name)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="font-medium text-foreground">{post.author.name}</span>
+          </Link>
+          <span>•</span>
+          <span>{formatDate(post.createdAt)}</span>
+        </div>
         <Link href={`/posts/${post.id}`} className="group">
           <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">
             {post.title}
           </h2>
         </Link>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-          <Link
-            href={`/developers/${post.author.id}`}
-            className="hover:text-primary transition-colors"
-          >
-            {post.author.name}
-          </Link>
-          <span>•</span>
-          <span>{formatDate(post.createdAt)}</span>
-        </div>
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground line-clamp-2 mb-4">
