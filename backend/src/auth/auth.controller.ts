@@ -7,7 +7,6 @@ import {
   Res,
   UseGuards,
   Get,
-  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,11 +19,9 @@ import type { FastifyReply } from 'fastify';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
-
-interface FastifyRequestWithUser {
-  user: any;
-  cookies?: Record<string, string>;
-}
+import { Public } from '../common/decorators/public.decorator.js';
+import { CurrentUser } from '../common/decorators/current-user.decorator.js';
+import type { User } from '../users/user.entity.js';
 
 interface FastifyReplyWithCookies extends FastifyReply {
   setCookie(name: string, value: string, options?: any): this;
@@ -48,6 +45,7 @@ export class AuthController {
    * @param registerDto - User registration data
    * @returns Created user object (passwordHash excluded)
    */
+  @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a new user' })
@@ -76,6 +74,7 @@ export class AuthController {
    * @param res - Fastify response (for setting cookie)
    * @returns Object with accessToken
    */
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
@@ -111,12 +110,13 @@ export class AuthController {
    * POST /auth/refresh
    * Implements token rotation: issues new access + refresh tokens.
    *
-   * @param req - Fastify request (to access user from refresh token validation)
+   * @param user - Current user from refresh token validation
    * @param res - Fastify response (for setting new cookie)
    * @returns Object with new accessToken
    */
-  @Post('refresh')
+  @Public()
   @UseGuards(AuthGuard('jwt-refresh'))
+  @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({
@@ -128,11 +128,11 @@ export class AuthController {
     description: 'Invalid or expired refresh token',
   })
   async refresh(
-    @Req() req: FastifyRequestWithUser,
+    @CurrentUser() user: User,
     @Res({ passthrough: true }) res: FastifyReplyWithCookies,
   ) {
     const { accessToken, refreshToken } = await this.authService.refresh(
-      req.user.id,
+      user.id,
     );
 
     // Set new refresh token as httpOnly cookie (token rotation)
@@ -152,11 +152,10 @@ export class AuthController {
    * POST /auth/logout
    * Clears refresh token cookie and nullifies token in database.
    *
-   * @param req - Fastify request (to get user ID)
+   * @param user - Current authenticated user
    * @param res - Fastify response (for clearing cookie)
    */
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Logout user' })
@@ -169,10 +168,10 @@ export class AuthController {
     description: 'Unauthorized',
   })
   async logout(
-    @Req() req: FastifyRequestWithUser,
+    @CurrentUser() user: User,
     @Res({ passthrough: true }) res: FastifyReplyWithCookies,
   ) {
-    await this.authService.logout(req.user.id);
+    await this.authService.logout(user.id);
 
     // Clear refresh token cookie
     res.clearCookie('refreshToken', {
@@ -190,11 +189,10 @@ export class AuthController {
    * GET /auth/me
    * Returns user profile for currently logged in user.
    *
-   * @param req - Fastify request (contains user from JWT validation)
+   * @param user - Current authenticated user
    * @returns Current user object
    */
   @Get('me')
-  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user' })
   @ApiResponse({
@@ -205,7 +203,7 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized',
   })
-  getMe(@Req() req: FastifyRequestWithUser) {
-    return req.user;
+  getMe(@CurrentUser() user: User) {
+    return user;
   }
 }

@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { Public } from './common/decorators/public.decorator.js';
 
 /**
  * Root application controller.
@@ -14,6 +15,7 @@ export class AppController {
    * - Testing the ResponseInterceptor
    * - Load balancer health checks
    */
+  @Public()
   @Get()
   getHealth() {
     return { status: 'ok', timestamp: new Date().toISOString() };
