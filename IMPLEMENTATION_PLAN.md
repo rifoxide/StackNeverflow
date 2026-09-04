@@ -10,7 +10,7 @@ Build a production-grade developer community platform from an empty repo. Requir
 |---|---|
 | Database | PostgreSQL via Docker Compose |
 | Backend | NestJS + Fastify + TypeORM (migrations, not synchronize) |
-| Frontend | Next.js 15 (app router) + Turbopack + Tailwind CSS + Axios |
+| Frontend | Next.js 15 (app router) + Turbopack + Tailwind CSS + shadcn/ui + Axios |
 | Auth | JWT access tokens (15min) + refresh tokens (7 days, httpOnly cookie) |
 | Repo | Simple monorepo — `backend/` and `frontend/` with separate `package.json` |
 | Package manager | npm |
@@ -69,10 +69,12 @@ Build a production-grade developer community platform from an empty repo. Requir
 
 **Verify:** `cd backend && npm run start:dev` — starts on :3001, connects to PostgreSQL, logs "TypeOrmModule initialized."
 
-### Step 0.3: Next.js frontend with Turbopack
+### Step 0.3: Next.js frontend with Turbopack + shadcn/ui
 
 - `create-next-app` with `--typescript --app --turbopack --eslint --tailwind`
 - Install: `axios`
+- Initialize shadcn/ui: `npx shadcn@latest init` (default config, CSS variables style)
+- Add base components: `npx shadcn@latest add button input textarea card skeleton badge avatar dropdown-menu`
 - Structure:
   ```
   frontend/
@@ -84,14 +86,14 @@ Build a production-grade developer community platform from an empty repo. Requir
   │   ├── developers/
   │   └── profile/
   ├── components/
-  │   ├── ui/              # reusable primitives (Button, Input, Card, Skeleton, etc.)
+  │   ├── ui/              # shadcn/ui primitives (auto-generated)
   │   └── layout/          # Navbar, Footer, Container
   ├── contexts/
   ├── hooks/
   ├── lib/
   │   ├── api.ts
   │   ├── types.ts
-  │   └── utils.ts
+  │   └── utils.ts        # cn() utility from shadcn
   └── package.json
   ```
 
@@ -308,10 +310,11 @@ curl -X POST localhost:3001/auth/register \
 
 ### Step 4.2: UI primitives + Navbar (F8 partial, F1 partial)
 
-**Files:** `frontend/components/ui/`, `frontend/components/layout/Navbar.tsx`
+**Files:** `frontend/components/layout/Navbar.tsx`
 
-- Reusable `components/ui/`: `Button`, `Input`, `Textarea`, `Card`, `Skeleton`, `EmptyState`, `ErrorState` (with retry), `Badge`, `Avatar` — all with Tailwind, consistent design tokens
-- `Navbar.tsx`: app name/logo, responsive (hamburger on mobile). Auth state: shows user name + avatar + dropdown (My Profile, Logout) OR Login/Register links.
+- Navbar using shadcn/ui components: `Button`, `Avatar`, `DropdownMenu`
+- Responsive (hamburger on mobile with shadcn Sheet component)
+- Auth state: shows user name + avatar + dropdown (My Profile, Logout) OR Login/Register links
 - Add to root layout
 
 **Verify:** Frontend renders Navbar on all pages. Mobile: hamburger toggles menu. Desktop: full nav.
@@ -320,9 +323,8 @@ curl -X POST localhost:3001/auth/register \
 
 **Files:** `frontend/app/auth/login/page.tsx`, `frontend/app/auth/register/page.tsx`
 
-- Login: email + password form. Calls `AuthContext.login()`. Redirects to `/` on success. Shows field-level validation errors from API.
+- Login: email + password form using shadcn/ui `Input`, `Button`, `Card`. Calls `AuthContext.login()`. Redirects to `/` on success. Shows field-level validation errors from API.
 - Register: name + email + password form. Same pattern.
-- Both use the reusable `Input`, `Button` components.
 - Client-side validation (required fields, email format) before API call.
 - "Already have an account?" / "Don't have one?" links between pages.
 
@@ -427,7 +429,7 @@ curl -X POST localhost:3001/auth/register \
 
 - `README.md` — all 8 items from PROJECT_INIT.md section 7:
   1. Project name + description
-  2. Tech stack (PostgreSQL, NestJS+Fastify, Next.js+Turbopack, TypeORM, TypeScript)
+  2. Tech stack (PostgreSQL, NestJS+Fastify, Next.js+Turbopack+shadcn/ui, TypeORM, TypeScript)
   3. Local setup (clone, docker compose up, cp .env, npm install, migrate, seed, run)
   4. Environment variables table (names + descriptions, no values)
   5. Swagger docs: `http://localhost:3001/api/docs`
