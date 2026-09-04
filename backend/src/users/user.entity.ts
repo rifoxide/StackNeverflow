@@ -33,7 +33,7 @@ export class User {
    * Never returned in API responses (excluded via class-transformer).
    */
   @Exclude()
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   passwordHash: string;
 
   /**
@@ -42,7 +42,7 @@ export class User {
    * Used to validate refresh token rotation (one valid refresh token per user).
    */
   @Exclude()
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   refreshTokenHash: string | null;
 
   @CreateDateColumn()

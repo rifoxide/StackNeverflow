@@ -1,7 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import fastifyCookie from '@fastify/cookie';
 import { AppModule } from './app.module.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
@@ -15,6 +16,9 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
+  // Register fastify cookie plugin
+  await app.register(fastifyCookie);
+
   app.enableCors({
     origin: configService.get('FRONTEND_URL'),
     credentials: true,
@@ -25,7 +29,10 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Global interceptors
-  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(app.get(Reflector)),
+    new ResponseInterceptor(),
+  );
 
   // Global pipes
   app.useGlobalPipes(

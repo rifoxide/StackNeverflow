@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { envValidationSchema } from './config/env.validation.js';
 import { AppController } from './app.controller.js';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 @Module({
   imports: [
