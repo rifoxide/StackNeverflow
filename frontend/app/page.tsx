@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { postsApi } from '@/lib/api';
 import type { Post } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@heroui/react/button';
+import { Input } from '@heroui/react/input';
+import { Card, CardHeader, CardContent } from '@heroui/react/card';
+import { Skeleton } from '@heroui/react/skeleton';
+import { Avatar, AvatarFallback } from '@heroui/react/avatar';
 import { ThumbsUp, ThumbsDown, MessageSquare, Search, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
@@ -18,16 +18,16 @@ function PostSkeleton() {
   return (
     <Card>
       <CardHeader>
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-4 w-1/2 mt-2" />
+        <Skeleton className="h-6 w-3/4 rounded-lg" />
+        <Skeleton className="h-4 w-1/2 mt-2 rounded-lg" />
       </CardHeader>
       <CardContent>
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-5/6 mt-2" />
+        <Skeleton className="h-4 w-full rounded-lg" />
+        <Skeleton className="h-4 w-5/6 mt-2 rounded-lg" />
         <div className="flex gap-4 mt-4">
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-16 rounded-lg" />
+          <Skeleton className="h-4 w-16 rounded-lg" />
+          <Skeleton className="h-4 w-16 rounded-lg" />
         </div>
       </CardContent>
     </Card>
@@ -40,17 +40,20 @@ function EmptyState({ search }: { search: string }) {
   return (
     <Card className="text-center py-12">
       <CardContent>
-        <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <MessageSquare className="h-12 w-12 mx-auto text-gray-400 mb-4" />
         <h3 className="text-lg font-semibold mb-2">
           {search ? 'No posts found' : 'No posts yet'}
         </h3>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
           {search
             ? 'Try adjusting your search terms'
             : 'Be the first to share your knowledge with the community!'}
         </p>
         {!search && (
-          <Button onClick={() => router.push('/posts/new')}>
+          <Button
+            onClick={() => router.push('/posts/new')}
+            className="bg-[#1877F2] dark:bg-[#2D88FF] text-white"
+          >
             Create First Post
           </Button>
         )}
@@ -61,11 +64,11 @@ function EmptyState({ search }: { search: string }) {
 
 function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
   return (
-    <Card className="text-center py-12 border-red-200 bg-red-50">
+    <Card className="text-center py-12 border-red-200 bg-red-50 dark:bg-red-950/30">
       <CardContent>
-        <h3 className="text-lg font-semibold text-red-900 mb-2">Failed to load posts</h3>
-        <p className="text-red-700 mb-4">{error}</p>
-        <Button onClick={onRetry} variant="outline">
+        <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Failed to load posts</h3>
+        <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+        <Button onClick={onRetry} variant="secondary">
           Retry
         </Button>
       </CardContent>
@@ -92,23 +95,23 @@ function PostCard({ post }: { post: Post }) {
   return (
     <Card className="hover:shadow-lg transition-all border-0 shadow-sm bg-white dark:bg-[#252728]">
       <CardHeader>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
           <Link
             href={`/developers/${post.author.id}`}
-            className="flex items-center gap-2 hover:text-primary transition-colors"
+            className="flex items-center gap-2 hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors"
           >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary text-primary-foreground">
+            <Avatar className="h-8 w-8 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
+              <AvatarFallback>
                 <User className="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
-            <span className="font-medium text-foreground">{post.author.name}</span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">{post.author.name}</span>
           </Link>
           <span>•</span>
           <span>{formatDate(post.createdAt)}</span>
         </div>
         <Link href={`/posts/${post.id}`} className="group">
-          <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">
+          <h2 className="text-xl font-semibold group-hover:text-[#1877F2] dark:group-hover:text-[#2D88FF] transition-colors">
             {post.title}
           </h2>
         </Link>
@@ -117,7 +120,7 @@ function PostCard({ post }: { post: Post }) {
         <div className="prose prose-sm dark:prose-invert max-w-none line-clamp-3 mb-4">
           <MarkdownViewer content={post.body} />
         </div>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-1">
             <ThumbsUp className="h-4 w-4" />
             <span>{post.likesCount}</span>
@@ -195,12 +198,15 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-bold">Feed</h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               Discover knowledge shared by the community
             </p>
           </div>
           {isAuthenticated && (
-            <Button onClick={() => router.push('/posts/new')}>
+            <Button
+              onClick={() => router.push('/posts/new')}
+              className="bg-[#1877F2] dark:bg-[#2D88FF] text-white"
+            >
               Create Post
             </Button>
           )}
@@ -208,7 +214,7 @@ export default function Home() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
           <Input
             type="search"
             placeholder="Search posts..."
@@ -241,21 +247,21 @@ export default function Home() {
             {totalPages > 1 && (
               <div className="flex justify-center gap-2 mt-8">
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
+                  isDisabled={page === 1}
                 >
                   Previous
                 </Button>
                 <div className="flex items-center gap-2 px-4">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
                     Page {page} of {totalPages}
                   </span>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
+                  isDisabled={page === totalPages}
                 >
                   Next
                 </Button>

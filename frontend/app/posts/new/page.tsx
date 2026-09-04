@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { postsApi } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@heroui/react/button';
+import { Input } from '@heroui/react/input';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@heroui/react/card';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { AxiosError } from 'axios';
 import { ArrowLeft } from 'lucide-react';
@@ -74,7 +74,7 @@ export default function NewPostPage() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">Loading...</p>
+            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
           </CardContent>
         </Card>
       </div>
@@ -84,7 +84,7 @@ export default function NewPostPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-6">
-        <Button variant="ghost" onClick={() => router.push('/')} className="mb-4">
+        <Button variant="tertiary" onClick={() => router.push('/')} className="mb-4">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Feed
         </Button>
@@ -92,20 +92,20 @@ export default function NewPostPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Create a Post</CardTitle>
+          <CardTitle>Create a Post</CardTitle>
           <CardDescription>
             Share your knowledge, ask questions, or start a discussion
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="p-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg">
                 {error}
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <label htmlFor="title" className="text-sm font-medium">
                 Title
               </label>
@@ -120,12 +120,12 @@ export default function NewPostPage() {
                 disabled={isLoading}
                 maxLength={255}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 {formData.title.length}/255 characters
               </p>
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <label htmlFor="body" className="text-sm font-medium">
                 Body
               </label>
@@ -135,20 +135,24 @@ export default function NewPostPage() {
                 placeholder="I am trying to implement JWT authentication in my NestJS application but I'm getting errors when trying to validate tokens..."
                 disabled={isLoading}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 Markdown is supported for formatting. Use ```language for code blocks.
               </p>
             </div>
 
             <div className="flex gap-3">
-              <Button type="submit" disabled={isLoading} className="flex-1">
+              <Button
+                type="submit"
+                isDisabled={isLoading}
+                className="flex-1 bg-[#1877F2] dark:bg-[#2D88FF] text-white"
+              >
                 {isLoading ? 'Creating...' : 'Create Post'}
               </Button>
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 onClick={() => router.push('/')}
-                disabled={isLoading}
+                isDisabled={isLoading}
               >
                 Cancel
               </Button>
@@ -160,9 +164,9 @@ export default function NewPostPage() {
       {/* Tips Card */}
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="text-lg">Tips for a great post</CardTitle>
+          <CardTitle>Tips for a great post</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground space-y-2">
+        <CardContent className="text-sm text-gray-600 dark:text-gray-400">
           <ul className="list-disc list-inside space-y-1">
             <li>Use a clear, descriptive title</li>
             <li>Include relevant code snippets with syntax highlighting</li>

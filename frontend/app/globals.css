@@ -1,135 +1,17 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "@heroui/styles/css";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+body {
+  background: #F2F4F7;
+  color: #050505;
 }
 
-:root {
-  --background: 240 242 245; /* #F0F2F5 */
-  --foreground: 5 5 5; /* #050505 - Main text */
-  --card: 255 255 255; /* #FFFFFF */
-  --card-foreground: 5 5 5;
-  --popover: 255 255 255;
-  --popover-foreground: 5 5 5;
-  --primary: 24 119 242; /* #1877F2 - Primary blue */
-  --primary-foreground: 255 255 255;
-  --secondary: 242 242 242; /* #F2F2F2 - Hover */
-  --secondary-foreground: 5 5 5;
-  --muted: 242 242 242;
-  --muted-foreground: 101 103 107; /* #65676B - Secondary text */
-  --accent: 242 242 242;
-  --accent-foreground: 5 5 5;
-  --destructive: 240 40 73; /* #F02849 - Danger */
-  --destructive-foreground: 255 255 255;
-  --success: 66 183 42; /* #42B72A */
-  --border: 206 208 212; /* #CED0D4 */
-  --input: 206 208 212;
-  --ring: 24 119 242;
-  --chart-1: 24 119 242;
-  --chart-2: 66 183 42;
-  --chart-3: 240 40 73;
-  --chart-4: 101 103 107;
-  --chart-5: 206 208 212;
-  --radius: 0.5rem;
-  --sidebar: 255 255 255;
-  --sidebar-foreground: 5 5 5;
-  --sidebar-primary: 24 119 242;
-  --sidebar-primary-foreground: 255 255 255;
-  --sidebar-accent: 242 242 242;
-  --sidebar-accent-foreground: 5 5 5;
-  --sidebar-border: 206 208 212;
-  --sidebar-ring: 24 119 242;
+.dark body {
+  background: #1C1C1D;
+  color: #E4E6EB;
 }
 
-.dark {
-  /* Dark Mode - Custom color scheme */
-  --background: 28 28 29; /* #1C1C1D */
-  --foreground: 228 230 235; /* #E4E6EB - Main text */
-  --card: 37 39 40; /* #252728 */
-  --card-foreground: 228 230 235;
-  --popover: 37 39 40;
-  --popover-foreground: 228 230 235;
-  --primary: 45 136 255; /* #2D88FF - Primary blue */
-  --primary-foreground: 255 255 255;
-  --secondary: 58 59 60; /* #3A3B3C - Hover */
-  --secondary-foreground: 228 230 235;
-  --muted: 58 59 60;
-  --muted-foreground: 176 179 184; /* #B0B3B8 - Secondary text */
-  --accent: 58 59 60;
-  --accent-foreground: 228 230 235;
-  --destructive: 240 40 73; /* #F02849 - Danger */
-  --destructive-foreground: 255 255 255;
-  --success: 69 189 98; /* #45BD62 */
-  --border: 37 39 40; /* #252728 - Match card for no visible borders */
-  --input: 62 64 66;
-  --ring: 45 136 255;
-  --chart-1: 45 136 255;
-  --chart-2: 69 189 98;
-  --chart-3: 240 40 73;
-  --chart-4: 176 179 184;
-  --chart-5: 62 64 66;
-  --sidebar: 37 39 40;
-  --sidebar-foreground: 228 230 235;
-  --sidebar-primary: 45 136 255;
-  --sidebar-primary-foreground: 255 255 255;
-  --sidebar-accent: 58 59 60;
-  --sidebar-accent-foreground: 228 230 235;
-  --sidebar-border: 37 39 40;
-  --sidebar-ring: 45 136 255;
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

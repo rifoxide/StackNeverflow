@@ -5,9 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { postsApi } from '@/lib/api';
 import type { Post } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@heroui/react/button';
+import { Card, CardHeader, CardContent } from '@heroui/react/card';
+import { Skeleton } from '@heroui/react/skeleton';
 import { ThumbsUp, ThumbsDown, MessageSquare, ArrowLeft } from 'lucide-react';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 
@@ -16,16 +16,16 @@ function PostSkeleton() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <Skeleton className="h-8 w-3/4 mb-4" />
-          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-8 w-3/4 mb-4 rounded-lg" />
+          <Skeleton className="h-4 w-1/2 rounded-lg" />
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-4 w-full mb-2" />
-          <Skeleton className="h-4 w-full mb-2" />
-          <Skeleton className="h-4 w-5/6 mb-4" />
+          <Skeleton className="h-4 w-full mb-2 rounded-lg" />
+          <Skeleton className="h-4 w-full mb-2 rounded-lg" />
+          <Skeleton className="h-4 w-5/6 mb-4 rounded-lg" />
           <div className="flex gap-4 mt-6">
-            <Skeleton className="h-10 w-24" />
-            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24 rounded-lg" />
+            <Skeleton className="h-10 w-24 rounded-lg" />
           </div>
         </CardContent>
       </Card>
@@ -37,11 +37,11 @@ function ErrorState({ error }: { error: string }) {
   const router = useRouter();
 
   return (
-    <Card className="text-center py-12 border-red-200 bg-red-50">
+    <Card className="text-center py-12 border-red-200 bg-red-50 dark:bg-red-950/30">
       <CardContent>
-        <h3 className="text-lg font-semibold text-red-900 mb-2">Failed to load post</h3>
-        <p className="text-red-700 mb-4">{error}</p>
-        <Button onClick={() => router.push('/')} variant="outline">
+        <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Failed to load post</h3>
+        <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+        <Button onClick={() => router.push('/')} variant="secondary">
           Back to Feed
         </Button>
       </CardContent>
@@ -94,7 +94,7 @@ export default function PostDetailPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-6">
-        <Button variant="ghost" onClick={() => router.push('/')} className="mb-4">
+        <Button variant="tertiary" onClick={() => router.push('/')} className="mb-4">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Feed
         </Button>
@@ -110,10 +110,10 @@ export default function PostDetailPage() {
           <Card>
             <CardHeader>
               <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Link
                   href={`/developers/${post.author.id}`}
-                  className="hover:text-primary transition-colors font-medium"
+                  className="hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors font-medium"
                 >
                   {post.author.name}
                 </Link>
@@ -126,16 +126,16 @@ export default function PostDetailPage() {
               <MarkdownViewer content={post.body} className="mb-6" />
 
               {/* Reaction Buttons */}
-              <div className="flex items-center gap-4 pt-4 border-t">
-                <Button variant="outline" size="sm" className="gap-2">
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Button variant="secondary" size="sm" className="gap-2">
                   <ThumbsUp className="h-4 w-4" />
                   <span>{post.likesCount}</span>
                 </Button>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button variant="secondary" size="sm" className="gap-2">
                   <ThumbsDown className="h-4 w-4" />
                   <span>{post.dislikesCount}</span>
                 </Button>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground ml-auto">
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 ml-auto">
                   <MessageSquare className="h-4 w-4" />
                   <span>{post.commentCount} comments</span>
                 </div>
@@ -151,7 +151,7 @@ export default function PostDetailPage() {
               </h2>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-gray-600 dark:text-gray-400">
                 <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Comments will be implemented in the next step</p>
               </div>
