@@ -93,7 +93,7 @@ describe('UsersService', () => {
         email,
         passwordHash: 'hashed',
         refreshTokenHash: null,
-      } as User);
+      });
 
       const result = await service.create(name, email, password);
 
@@ -109,7 +109,7 @@ describe('UsersService', () => {
       mockRepository.findOne.mockResolvedValue({
         id: '1',
         email: 'existing@example.com',
-      } as User);
+      });
 
       await expect(
         service.create('Test', 'existing@example.com', 'password'),
@@ -125,7 +125,7 @@ describe('UsersService', () => {
         capturedHash = data.passwordHash;
         return data as User;
       });
-      mockRepository.save.mockResolvedValue({ id: '1' } as User);
+      mockRepository.save.mockResolvedValue({ id: '1' });
 
       await service.create('Test', 'test@example.com', password);
 
@@ -134,8 +134,10 @@ describe('UsersService', () => {
       expect(capturedHash).toMatch(/^\$2[aby]\$12\$/); // bcrypt format with 12 rounds
 
       // Verify hash can validate the original password
-      const isValid = await bcrypt.compare(password, capturedHash!);
-      expect(isValid).toBe(true);
+      if (capturedHash) {
+        const isValid = await bcrypt.compare(password, capturedHash);
+        expect(isValid).toBe(true);
+      }
     });
   });
 

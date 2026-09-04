@@ -15,11 +15,19 @@ interface FastifyRequestWithCookies {
  * Also checks that the token matches the hashed version stored in DB.
  */
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor(
     configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
+    const secret = configService.get<string>('JWT_REFRESH_SECRET');
+    if (!secret) {
+      throw new Error('JWT_REFRESH_SECRET is not defined');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: FastifyRequestWithCookies) => {
@@ -27,7 +35,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_REFRESH_SECRET')!,
+      secretOrKey: secret,
       passReqToCallback: true, // Pass request to validate() to access cookie
     } as any);
   }
@@ -39,7 +47,10 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
    * @returns User object with refreshToken attached
    * @throws UnauthorizedException if user not found or token hash mismatch
    */
-  async validate(request: FastifyRequestWithCookies, payload: { sub: string; email: string }) {
+  async validate(
+    request: FastifyRequestWithCookies,
+    payload: { sub: string; email: string },
+  ) {
     const user = await this.usersService.findById(payload.sub);
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -56,6 +67,14 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    return { ...user, refreshToken }; // Attach token for rotation
+    // Return user data with refreshToken (avoid spreading the class instance)
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      refreshToken,
+    };
   }
 }

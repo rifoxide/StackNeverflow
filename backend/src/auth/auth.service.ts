@@ -39,7 +39,9 @@ export class AuthService {
    * @returns Object with accessToken and refreshToken
    * @throws UnauthorizedException if credentials are invalid
    */
-  async login(loginDto: LoginDto): Promise<{ accessToken: string; refreshToken: string }> {
+  async login(
+    loginDto: LoginDto,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const { email, password } = loginDto;
 
     // Find user by email
@@ -69,7 +71,9 @@ export class AuthService {
    * @param userId - User ID from validated refresh token
    * @returns New access token and refresh token
    */
-  async refresh(userId: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async refresh(
+    userId: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const user = await this.usersService.findById(userId);
 
     // Generate new tokens (token rotation)
@@ -98,11 +102,16 @@ export class AuthService {
    * @param email - User email for token payload
    * @returns Object with accessToken and refreshToken
    */
-  private async generateTokens(userId: string, email: string): Promise<{ accessToken: string; refreshToken: string }> {
+  private async generateTokens(
+    userId: string,
+    email: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { sub: userId, email };
 
-    const accessExpiration = this.configService.get<number>('JWT_ACCESS_EXPIRATION') || 900;
-    const refreshExpiration = this.configService.get<number>('JWT_REFRESH_EXPIRATION') || 604800;
+    const accessExpiration =
+      this.configService.get<number>('JWT_ACCESS_EXPIRATION') || 900;
+    const refreshExpiration =
+      this.configService.get<number>('JWT_REFRESH_EXPIRATION') || 604800;
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {

@@ -9,9 +9,20 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
     "db:up": "docker compose up -d",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.0.1",
+    "husky": "^9.1.0",
+    "lint-staged": "^16.1.0"
+  },
+  "lint-staged": {
+    "backend/src/**/*.ts": [
+      "bash -c 'cd backend && npx eslint --fix --no-warn-ignored ${0}'"
+    ],
+    "backend/**/*.{ts,json,md}": [
+      "bash -c 'cd backend && npx prettier --write ${0}'"
+    ]
   }
 }

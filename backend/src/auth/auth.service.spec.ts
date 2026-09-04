@@ -6,7 +6,6 @@ import { User } from '../users/user.entity.js';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let usersService: UsersService;
 
   const mockUsersService = {
     create: vi.fn(),
@@ -25,7 +24,6 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    usersService = module.get<UsersService>(UsersService);
   });
 
   afterEach(() => {
@@ -52,7 +50,7 @@ describe('AuthService', () => {
 
       const result = await service.register(registerDto);
 
-      expect(usersService.create).toHaveBeenCalledWith(
+      expect(mockUsersService.create).toHaveBeenCalledWith(
         registerDto.name,
         registerDto.email,
         registerDto.password,

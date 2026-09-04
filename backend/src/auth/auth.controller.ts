@@ -1,5 +1,20 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Res, UseGuards, Get, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Res,
+  UseGuards,
+  Get,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import type { FastifyReply } from 'fastify';
 import { AuthService } from './auth.service.js';
@@ -76,7 +91,8 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: FastifyReplyWithCookies,
   ) {
-    const { accessToken, refreshToken } = await this.authService.login(loginDto);
+    const { accessToken, refreshToken } =
+      await this.authService.login(loginDto);
 
     // Set refresh token as httpOnly cookie
     res.setCookie('refreshToken', refreshToken, {
@@ -115,7 +131,9 @@ export class AuthController {
     @Req() req: FastifyRequestWithUser,
     @Res({ passthrough: true }) res: FastifyReplyWithCookies,
   ) {
-    const { accessToken, refreshToken } = await this.authService.refresh(req.user.id);
+    const { accessToken, refreshToken } = await this.authService.refresh(
+      req.user.id,
+    );
 
     // Set new refresh token as httpOnly cookie (token rotation)
     res.setCookie('refreshToken', refreshToken, {
@@ -187,7 +205,7 @@ export class AuthController {
     status: 401,
     description: 'Unauthorized',
   })
-  async getMe(@Req() req: FastifyRequestWithUser) {
+  getMe(@Req() req: FastifyRequestWithUser) {
     return req.user;
   }
 }
