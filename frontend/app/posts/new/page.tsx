@@ -6,8 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { postsApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { AxiosError } from 'axios';
 import { ArrowLeft } from 'lucide-react';
 
@@ -20,7 +20,6 @@ export default function NewPostPage() {
     title: '',
     body: '',
   });
-  const [showPreview, setShowPreview] = useState(false);
 
   // Redirect if not authenticated
   if (!authLoading && !isAuthenticated) {
@@ -63,7 +62,7 @@ export default function NewPostPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -72,7 +71,7 @@ export default function NewPostPage() {
 
   if (authLoading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground">Loading...</p>
@@ -83,7 +82,7 @@ export default function NewPostPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-6">
         <Button variant="ghost" onClick={() => router.push('/')} className="mb-4">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -101,7 +100,7 @@ export default function NewPostPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
                 {error}
               </div>
             )}
@@ -127,47 +126,17 @@ export default function NewPostPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="body" className="text-sm font-medium">
-                  Body
-                </label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPreview(!showPreview)}
-                >
-                  {showPreview ? 'Edit' : 'Preview'}
-                </Button>
-              </div>
-
-              {showPreview ? (
-                <div className="min-h-[200px] p-4 border rounded-lg bg-muted/30">
-                  {formData.body ? (
-                    <div className="prose prose-sm max-w-none">
-                      {formData.body.split('\n').map((line, i) => (
-                        <p key={i}>{line || ' '}</p>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground italic">Nothing to preview yet</p>
-                  )}
-                </div>
-              ) : (
-                <Textarea
-                  id="body"
-                  name="body"
-                  placeholder="I am trying to implement JWT authentication in my NestJS application but I'm getting errors when trying to validate tokens..."
-                  value={formData.body}
-                  onChange={handleChange}
-                  required
-                  disabled={isLoading}
-                  rows={12}
-                  className="resize-none"
-                />
-              )}
+              <label htmlFor="body" className="text-sm font-medium">
+                Body
+              </label>
+              <MarkdownEditor
+                value={formData.body}
+                onChange={(value) => setFormData((prev) => ({ ...prev, body: value }))}
+                placeholder="I am trying to implement JWT authentication in my NestJS application but I'm getting errors when trying to validate tokens..."
+                disabled={isLoading}
+              />
               <p className="text-xs text-muted-foreground">
-                Markdown is supported for formatting
+                Markdown is supported for formatting. Use ```language for code blocks.
               </p>
             </div>
 
@@ -196,7 +165,8 @@ export default function NewPostPage() {
         <CardContent className="text-sm text-muted-foreground space-y-2">
           <ul className="list-disc list-inside space-y-1">
             <li>Use a clear, descriptive title</li>
-            <li>Include relevant code snippets or error messages</li>
+            <li>Include relevant code snippets with syntax highlighting</li>
+            <li>Format code blocks with ```language (e.g., ```javascript, ```python)</li>
             <li>Explain what you&apos;ve already tried</li>
             <li>Be respectful and constructive</li>
           </ul>

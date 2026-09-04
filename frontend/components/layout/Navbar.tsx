@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Home, PenSquare } from 'lucide-react';
+import { Menu, Home, PenSquare, User } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/Logo';
@@ -25,15 +25,6 @@ export function Navbar() {
   const handleLogout = async () => {
     await logout();
     router.push('/');
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   const NavLinks = () => (
@@ -61,8 +52,8 @@ export function Navbar() {
           <DropdownMenuTrigger>
             <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                  {getInitials(user.name)}
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  <User className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium hidden md:inline">{user.name}</span>
@@ -100,7 +91,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#252728] shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#252728]/80 backdrop-blur-md shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
@@ -131,10 +122,8 @@ export function Navbar() {
 
           {/* Mobile Menu */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-              </Button>
+            <SheetTrigger className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-md hover:bg-accent hover:text-accent-foreground">
+              <Menu className="h-5 w-5" />
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col gap-6 mt-6">
@@ -166,7 +155,7 @@ export function Navbar() {
                       <div className="flex items-center gap-3 pb-4 border-b">
                         <Avatar className="h-10 w-10">
                           <AvatarFallback className="bg-primary text-primary-foreground">
-                            {getInitials(user.name)}
+                            <User className="h-5 w-5" />
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">

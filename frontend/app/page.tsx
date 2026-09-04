@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ThumbsUp, ThumbsDown, MessageSquare, Search } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare, Search, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { MarkdownViewer } from '@/components/MarkdownViewer';
 
 function PostSkeleton() {
   return (
@@ -88,15 +89,6 @@ function PostCard({ post }: { post: Post }) {
     return date.toLocaleDateString();
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
     <Card className="hover:shadow-lg transition-all border-0 shadow-sm bg-white dark:bg-[#252728]">
       <CardHeader>
@@ -106,8 +98,8 @@ function PostCard({ post }: { post: Post }) {
             className="flex items-center gap-2 hover:text-primary transition-colors"
           >
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                {getInitials(post.author.name)}
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                <User className="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
             <span className="font-medium text-foreground">{post.author.name}</span>
@@ -122,10 +114,9 @@ function PostCard({ post }: { post: Post }) {
         </Link>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground line-clamp-2 mb-4">
-          {post.body.substring(0, 200)}
-          {post.body.length > 200 ? '...' : ''}
-        </p>
+        <div className="prose prose-sm dark:prose-invert max-w-none line-clamp-3 mb-4">
+          <MarkdownViewer content={post.body} />
+        </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <ThumbsUp className="h-4 w-4" />

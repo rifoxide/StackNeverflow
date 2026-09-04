@@ -9,8 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThumbsUp, ThumbsDown, MessageSquare, ArrowLeft } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownViewer } from '@/components/MarkdownViewer';
 
 function PostSkeleton() {
   return (
@@ -124,9 +123,7 @@ export default function PostDetailPage() {
             </CardHeader>
             <CardContent>
               {/* Post Body with Markdown */}
-              <div className="prose prose-sm max-w-none mb-6">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
-              </div>
+              <MarkdownViewer content={post.body} className="mb-6" />
 
               {/* Reaction Buttons */}
               <div className="flex items-center gap-4 pt-4 border-t">
