@@ -35,8 +35,9 @@ interface CommentItemProps {
 }
 
 /**
- * Visual indent cap. Past this we drop the left margin and keep a
- * left border so the thread still feels grouped on mobile.
+ * Past MAX_INDENT_DEPTH we stop adding left margin and let the
+ * guide line sit flush at the edge so the gutter doesn't
+ * disappear off the viewport on mobile.
  */
 const MAX_INDENT_DEPTH = 3;
 
@@ -63,21 +64,35 @@ export function CommentItem({
     return ok;
   };
 
-  // Depth-based layout. Past MAX_INDENT_DEPTH we use a continuing
-  // border instead of extra margin so mobile doesn't collapse.
+  // Depth-based layout. The wrapper itself only owns margin/padding
+  // and `position: relative` so the guide-line ::before can anchor.
+  // The line itself is the visual; we no longer fall back to a
+  // border at deep levels.
   const indentClass =
     depth === 0
       ? ''
       : depth < MAX_INDENT_DEPTH
         ? cn(
-            'ml-4 md:ml-8',
+            'relative ml-4 md:ml-8',
             depth >= 2 && 'ml-6 md:ml-12',
           )
-        : 'ml-0 border-l-2 border-gray-200 dark:border-gray-700 pl-4';
+        : 'relative pl-4';
+
+  // Offsets the guide line inside the left gutter of an indented
+  // comment. The ::before is full-height of the wrapper, so it
+  // continues down through every nested child rendered below.
+  const guideLineClass =
+    depth === 0
+      ? ''
+      : depth === 1
+        ? 'before:absolute before:top-0 before:bottom-0 before:left-[14px] md:before:left-[30px] before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none'
+        : depth === 2
+          ? 'before:absolute before:top-0 before:bottom-0 before:left-[22px] md:before:left-[46px] before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none'
+          : 'before:absolute before:top-0 before:bottom-0 before:left-0 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none';
 
   return (
     <div className={cn('pt-3', depth > 0 && 'mt-3')}>
-      <div className={cn(indentClass)}>
+      <div className={cn(indentClass, guideLineClass)}>
         <div className="flex items-start gap-2.5">
           <Link
             href={`/developers/${comment.author.id}`}
