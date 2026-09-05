@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { DevelopersModule } from './developers/developers.module.js';
 import { PostsModule } from './posts/posts.module.js';
 import { CommentsModule } from './comments/comments.module.js';
+import { ReactionsModule } from './reactions/reactions.module.js';
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -39,6 +40,7 @@ const __dirname = dirname(__filename);
     DevelopersModule,
     PostsModule,
     CommentsModule,
+    ReactionsModule,
   ],
   controllers: [AppController],
   providers: [],
