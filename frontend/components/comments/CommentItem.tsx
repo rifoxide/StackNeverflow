@@ -64,10 +64,9 @@ export function CommentItem({
     return ok;
   };
 
-  // Depth-based layout. The wrapper itself only owns margin/padding
-  // and `position: relative` so the guide-line ::before can anchor.
-  // The line itself is the visual; we no longer fall back to a
-  // border at deep levels.
+  // Depth-based layout. The wrapper owns the indent (margin/padding)
+  // and `position: relative` so the connector ::before can anchor.
+  // The avatar-to-avatar line itself is a separate class below.
   const indentClass =
     depth === 0
       ? ''
@@ -78,17 +77,16 @@ export function CommentItem({
           )
         : 'relative pl-4';
 
-  // Offsets the guide line inside the left gutter of an indented
-  // comment. The ::before is full-height of the wrapper, so it
-  // continues down through every nested child rendered below.
+  // Facebook-style avatar-to-avatar connector: a short vertical
+  // line at the reply's avatar x-center, extending 12px above the
+  // wrapper (the pt-3 gap between consecutive comments). One line
+  // per parent-child pair — the reply owns the line, not the parent.
+  // Depth-independent because the avatar size + position are
+  // constant; the line always lands on the reply's own avatar top.
   const guideLineClass =
     depth === 0
       ? ''
-      : depth === 1
-        ? 'before:absolute before:top-0 before:bottom-0 before:left-[14px] md:before:left-[30px] before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none'
-        : depth === 2
-          ? 'before:absolute before:top-0 before:bottom-0 before:left-[22px] md:before:left-[46px] before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none'
-          : 'before:absolute before:top-0 before:bottom-0 before:left-0 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none';
+      : 'before:absolute before:-top-3 before:left-[14px] before:h-3 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none';
 
   return (
     <div className={cn('pt-3', depth > 0 && 'mt-3')}>
