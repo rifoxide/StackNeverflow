@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback } from '@heroui/react/avatar';
 import { ThumbsUp, ThumbsDown, MessageSquare, Search, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { formatRelativeTime } from '@/lib/comments';
 
 function PostSkeleton() {
   return (
@@ -77,23 +78,8 @@ function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) 
 }
 
 function PostCard({ post }: { post: Post }) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 30) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  };
-
   return (
-    <Card className="hover:shadow-lg transition-all border-0 shadow-sm bg-white dark:bg-[#252728]">
+    <Card className="hover:shadow-lg transition-all border-0 shadow-sm">
       <CardHeader>
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
           <Link
@@ -108,7 +94,7 @@ function PostCard({ post }: { post: Post }) {
             <span className="font-medium text-gray-900 dark:text-gray-100">{post.author.name}</span>
           </Link>
           <span>•</span>
-          <span>{formatDate(post.createdAt)}</span>
+          <span>{formatRelativeTime(post.createdAt)}</span>
         </div>
         <Link href={`/posts/${post.id}`} className="group">
           <h2 className="text-xl font-semibold group-hover:text-[#1877F2] dark:group-hover:text-[#2D88FF] transition-colors">

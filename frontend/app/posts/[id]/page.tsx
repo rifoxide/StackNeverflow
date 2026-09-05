@@ -8,8 +8,10 @@ import type { Post } from '@/lib/types';
 import { Button } from '@heroui/react/button';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Skeleton } from '@heroui/react/skeleton';
-import { ThumbsUp, ThumbsDown, MessageSquare, ArrowLeft } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@heroui/react/avatar';
+import { ThumbsUp, ThumbsDown, MessageSquare, ArrowLeft, User } from 'lucide-react';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
+import { CommentSection } from '@/components/comments/CommentSection';
 
 function PostSkeleton() {
   return (
@@ -113,9 +115,14 @@ export default function PostDetailPage() {
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Link
                   href={`/developers/${post.author.id}`}
-                  className="hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors font-medium"
+                  className="flex items-center gap-2 hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors"
                 >
-                  {post.author.name}
+                  <Avatar className="h-8 w-8 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
+                    <AvatarFallback>
+                      <User className="h-4 w-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{post.author.name}</span>
                 </Link>
                 <span>•</span>
                 <span>{formatDate(post.createdAt)}</span>
@@ -143,20 +150,15 @@ export default function PostDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Comments Section Placeholder */}
-          <Card>
-            <CardHeader>
-              <h2 className="text-xl font-semibold">
-                {post.commentCount} {post.commentCount === 1 ? 'Comment' : 'Comments'}
-              </h2>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-                <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Comments will be implemented in the next step</p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Comments Section */}
+          <CommentSection
+            postId={post.id}
+            onCommentCreated={() =>
+              setPost((p) =>
+                p ? { ...p, commentCount: p.commentCount + 1 } : p,
+              )
+            }
+          />
         </div>
       ) : null}
     </div>
