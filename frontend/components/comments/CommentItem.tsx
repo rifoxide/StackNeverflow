@@ -77,20 +77,50 @@ export function CommentItem({
           )
         : 'relative pl-4';
 
-  // Facebook-style avatar-to-avatar connector: a short vertical
-  // line at the reply's avatar x-center, extending 12px above the
-  // wrapper (the pt-3 gap between consecutive comments). One line
-  // per parent-child pair — the reply owns the line, not the parent.
-  // Depth-independent because the avatar size + position are
-  // constant; the line always lands on the reply's own avatar top.
-  const guideLineClass =
+  // Facebook-style L-shape connector, one per parent-child pair.
+  // The reply draws the L on its own inner wrapper: ::before is
+  // the vertical leg (in the gap above the avatar), ::after is
+  // the horizontal leg (at the avatar top, going from the
+  // parent's avatar x to the reply's avatar center). Depth- and
+  // breakpoint-specific because each indent level shifts where
+  // the parent's avatar sits in the reply's local frame.
+  //
+  // The vertical leg is truncated to 12px (just the gap) — the
+  // parent's content height is dynamic, so a true full-height
+  // Facebook connector would need JS measurement, which we skip.
+  const connectorClass =
     depth === 0
       ? ''
-      : 'before:absolute before:-top-3 before:left-[14px] before:h-3 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none';
+      : depth === 1
+        ? cn(
+            // Vertical leg: x=0 mobile, x=-16 desktop
+            'before:absolute before:-top-3 before:left-0 md:before:-left-4 before:h-3 before:w-0.5',
+            'before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none',
+            // Horizontal leg: from corner to reply's avatar center
+            'after:absolute after:top-0 after:left-0 md:after:-left-4 after:h-0.5 after:w-4 md:after:w-8',
+            'after:bg-gray-200 dark:after:bg-gray-700 after:pointer-events-none',
+          )
+        : depth === 2
+          ? cn(
+              'before:absolute before:-top-3 before:-left-2 md:before:-left-8 before:h-3 before:w-0.5',
+              'before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none',
+              'after:absolute after:top-0 after:-left-2 md:after:-left-8 after:h-0.5 after:w-6 md:after:w-12',
+              'after:bg-gray-200 dark:after:bg-gray-700 after:pointer-events-none',
+            )
+          : depth === 3
+            ? cn(
+                'before:absolute before:-top-3 before:left-4 before:h-3 before:w-0.5',
+                'before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none',
+                'after:absolute after:top-0 after:left-4 after:h-0.5 after:w-4',
+                'after:bg-gray-200 dark:after:bg-gray-700 after:pointer-events-none',
+              )
+            : // depth 4+: geometry collapses — corner lands on the
+              // reply's own avatar center, so just a vertical leg.
+              'before:absolute before:-top-3 before:left-8 before:h-3 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none';
 
   return (
     <div className={cn('pt-3', depth > 0 && 'mt-3')}>
-      <div className={cn(indentClass, guideLineClass)}>
+      <div className={cn(indentClass, connectorClass)}>
         <div className="flex items-start gap-2.5">
           <Link
             href={`/developers/${comment.author.id}`}
