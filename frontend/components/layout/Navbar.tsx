@@ -44,14 +44,14 @@ export function Navbar() {
       return (
         <Dropdown>
           <DropdownTrigger>
-            <button className="flex items-center gap-2 hover:opacity-80 transition-opacity outline-none">
+            <span className="flex items-center gap-2 hover:opacity-80 transition-opacity outline-none">
               <Avatar className="h-8 w-8 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
                 <AvatarFallback>
                   <User className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium hidden md:inline">{user.name}</span>
-            </button>
+            </span>
           </DropdownTrigger>
           <DropdownMenu>
             <DropdownItem onPress={() => router.push('/profile/edit')}>
@@ -85,7 +85,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#252728]/80 backdrop-blur-md shadow-sm">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-md shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
@@ -126,7 +126,7 @@ export function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {mobileOpen && (
-        <div className="md:hidden fixed inset-0 top-14 bg-white dark:bg-[#252728] z-40 overflow-y-auto">
+        <div className="md:hidden fixed inset-0 top-14 z-40 overflow-y-auto">
           <div className="flex flex-col gap-6 p-6">
             <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Theme</span>
