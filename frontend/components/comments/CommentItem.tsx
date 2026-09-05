@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { Reply, User } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@heroui/react/avatar';
@@ -57,6 +59,31 @@ export function CommentItem({
   const isAuthor = currentUser?.id === comment.authorId;
   const showReplyForm = replyingTo === comment.id;
 
+  // Measure our own inner wrapper's height so child replies can
+  // size their L-shape vertical leg to reach our avatar bottom.
+  // The variable is inherited down the tree; each depth uses it
+  // to draw the leg from its own avatar top back up to ours.
+  const innerRef = useRef<HTMLDivElement | null>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    if (innerRef.current) {
+      setContentHeight(innerRef.current.offsetHeight);
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContentHeight(entry.contentRect.height);
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const submitReply = async (body: string) => {
     const created = await onAddComment(body, comment.id);
     const ok = created !== null;
@@ -85,16 +112,17 @@ export function CommentItem({
   // breakpoint-specific because each indent level shifts where
   // the parent's avatar sits in the reply's local frame.
   //
-  // The vertical leg is truncated to 12px (just the gap) — the
-  // parent's content height is dynamic, so a true full-height
-  // Facebook connector would need JS measurement, which we skip.
+  // The vertical leg is sized via `--comment-content-height`,
+  // which the parent sets on its outer div from JS-measured
+  // height of its own inner wrapper. CSS variables cascade to
+  // descendants, so the child reads it here.
   const connectorClass =
     depth === 0
       ? ''
       : depth === 1
         ? cn(
-            // Vertical leg: x=0 mobile, x=-16 desktop
-            'before:absolute before:-top-3 before:left-0 md:before:-left-4 before:h-3 before:w-0.5',
+            // Vertical leg: full-height, x=0 mobile, x=-16 desktop
+            'before:absolute before:-top-[calc(var(--comment-content-height)-8px)] before:left-0 md:before:-left-4 before:h-[calc(var(--comment-content-height)-8px)] before:w-0.5',
             'before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none',
             // Horizontal leg: from corner to reply's avatar center
             'after:absolute after:top-0 after:left-0 md:after:-left-4 after:h-0.5 after:w-4 md:after:w-8',
@@ -102,25 +130,32 @@ export function CommentItem({
           )
         : depth === 2
           ? cn(
-              'before:absolute before:-top-3 before:-left-2 md:before:-left-8 before:h-3 before:w-0.5',
+              'before:absolute before:-top-[calc(var(--comment-content-height)-8px)] before:-left-2 md:before:-left-8 before:h-[calc(var(--comment-content-height)-8px)] before:w-0.5',
               'before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none',
               'after:absolute after:top-0 after:-left-2 md:after:-left-8 after:h-0.5 after:w-6 md:after:w-12',
               'after:bg-gray-200 dark:after:bg-gray-700 after:pointer-events-none',
             )
           : depth === 3
             ? cn(
-                'before:absolute before:-top-3 before:left-4 before:h-3 before:w-0.5',
+                'before:absolute before:-top-[calc(var(--comment-content-height)-8px)] before:left-4 before:h-[calc(var(--comment-content-height)-8px)] before:w-0.5',
                 'before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none',
                 'after:absolute after:top-0 after:left-4 after:h-0.5 after:w-4',
                 'after:bg-gray-200 dark:after:bg-gray-700 after:pointer-events-none',
               )
             : // depth 4+: geometry collapses — corner lands on the
               // reply's own avatar center, so just a vertical leg.
-              'before:absolute before:-top-3 before:left-8 before:h-3 before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none';
+              'before:absolute before:-top-[calc(var(--comment-content-height)-8px)] before:left-8 before:h-[calc(var(--comment-content-height)-8px)] before:w-0.5 before:bg-gray-200 dark:before:bg-gray-700 before:pointer-events-none';
 
   return (
-    <div className={cn('pt-3', depth > 0 && 'mt-3')}>
-      <div className={cn(indentClass, connectorClass)}>
+    <div
+      className={cn('pt-3', depth > 0 && 'mt-3')}
+      style={
+        childrenComments.length > 0 && contentHeight > 0
+          ? ({ '--comment-content-height': `${contentHeight}px` } as CSSProperties)
+          : undefined
+      }
+    >
+      <div ref={innerRef} className={cn(indentClass, connectorClass)}>
         <div className="flex items-start gap-2.5">
           <Link
             href={`/developers/${comment.author.id}`}
