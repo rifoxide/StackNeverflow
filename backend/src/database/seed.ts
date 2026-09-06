@@ -3,13 +3,162 @@ import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import * as bcrypt from 'bcrypt';
-import { DataSource } from 'typeorm';
-import { User } from '../users/user.entity.js';
-import { Skill } from '../users/skill.entity.js';
-import { Experience } from '../users/experience.entity.js';
-import { Post } from '../posts/post.entity.js';
-import { Comment } from '../comments/comment.entity.js';
-import { Reaction } from '../reactions/reaction.entity.js';
+import {
+  DataSource,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+// Minimal entity definitions for seed only (avoids NestJS decorator issues)
+@Entity('users')
+class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ unique: true })
+  email: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  passwordHash: string;
+
+  @Column({ type: 'text', nullable: true })
+  refreshTokenHash: string | null;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
+@Entity('skills')
+class Skill {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column('uuid')
+  userId: string;
+
+  @Column()
+  name: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+}
+
+@Entity('experiences')
+class Experience {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column('uuid')
+  userId: string;
+
+  @Column()
+  title: string;
+
+  @Column()
+  company: string;
+
+  @Column('date')
+  fromDate: Date;
+
+  @Column({ type: 'date', nullable: true })
+  toDate: Date | null;
+
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
+
+  @CreateDateColumn()
+  createdAt: Date;
+}
+
+@Entity('posts')
+class Post {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column('uuid')
+  authorId: string;
+
+  @Column()
+  title: string;
+
+  @Column('text')
+  body: string;
+
+  @Column({ type: 'int', default: 0 })
+  likesCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  dislikesCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  commentCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  rankScore: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
+@Entity('comments')
+class Comment {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column('uuid')
+  postId: string;
+
+  @Column('uuid')
+  authorId: string;
+
+  @Column({ type: 'uuid', nullable: true })
+  parentCommentId: string | null;
+
+  @Column('text')
+  body: string;
+
+  @Column({ type: 'int', default: 0 })
+  likesCount: number;
+
+  @Column({ type: 'int', default: 0 })
+  dislikesCount: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+}
+
+@Entity('reactions')
+class Reaction {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column('uuid')
+  userId: string;
+
+  @Column()
+  targetType: string;
+
+  @Column('uuid')
+  targetId: string;
+
+  @Column()
+  type: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -223,7 +372,7 @@ function rand(): number {
   x ^= x << 13;
   x ^= x >>> 17;
   x ^= x << 5;
-  rngState = (x >>> 0) || 1; // never let state hit 0 (fixed point of xorshift)
+  rngState = x >>> 0 || 1; // never let state hit 0 (fixed point of xorshift)
   return rngState / 0x100000000;
 }
 function randInt(min: number, maxInclusive: number): number {
@@ -241,14 +390,7 @@ async function main(): Promise<void> {
   const ds = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    entities: [
-      User,
-      Skill,
-      Experience,
-      Post,
-      Comment,
-      Reaction,
-    ],
+    entities: [User, Skill, Experience, Post, Comment, Reaction],
     synchronize: false,
   });
 
@@ -299,7 +441,7 @@ async function main(): Promise<void> {
       );
     }
   }
-  console.log(`Seeded ${users.length} users with profiles.`);
+  console.log(`Seeded ${String(users.length)} users with profiles.`);
 
   // 2. Posts (5-10 per user) -------------------------------------------
   const postRepo = ds.getRepository(Post);
@@ -307,7 +449,7 @@ async function main(): Promise<void> {
   for (const user of users) {
     const count = randInt(5, 10);
     for (let i = 0; i < count; i++) {
-      const title = `${pick(POST_TITLES)} #${randInt(1, 9999)}`;
+      const title = `${pick(POST_TITLES)} #${String(randInt(1, 9999))}`;
       const body = pick(POST_BODIES);
       const post = postRepo.create({
         authorId: user.id,
@@ -322,7 +464,7 @@ async function main(): Promise<void> {
       posts.push(saved);
     }
   }
-  console.log(`Seeded ${posts.length} posts.`);
+  console.log(`Seeded ${String(posts.length)} posts.`);
 
   // 3. Comments + replies ---------------------------------------------
   const commentRepo = ds.getRepository(Comment);
@@ -363,7 +505,7 @@ async function main(): Promise<void> {
     }
   }
   console.log(
-    `Seeded ${totalComments} comments and ${totalReplies} replies.`,
+    `Seeded ${String(totalComments)} comments and ${String(totalReplies)} replies.`,
   );
 
   // 4. Reactions (posts + comments) ------------------------------------
@@ -402,7 +544,7 @@ async function main(): Promise<void> {
       }
     }
   }
-  console.log(`Seeded ${totalReactions} reactions.`);
+  console.log(`Seeded ${String(totalReactions)} reactions.`);
 
   // 5. Recount + rank score -------------------------------------------
   // We recount directly via SQL so the seed is independent of the
@@ -459,16 +601,23 @@ async function main(): Promise<void> {
   );
   console.log('\nTop 5 ranked posts:');
   for (const row of top) {
+    const rankScore = String(row.rankScore);
+    const likesCount = String(row.likesCount);
+    const dislikesCount = String(row.dislikesCount);
+    const commentCount = String(row.commentCount);
+    const title = String(row.title);
     console.log(
-      `  [${row.rankScore}] (👍 ${row.likesCount} / 👎 ${row.dislikesCount} / 💬 ${row.commentCount}) ${row.title}`,
+      `  [${rankScore}] (👍 ${likesCount} / 👎 ${dislikesCount} / 💬 ${commentCount}) ${title}`,
     );
   }
 
-  console.log(`\nSeed complete. Login with any seeded email + password "${PASSWORD}".`);
+  console.log(
+    `\nSeed complete. Login with any seeded email + password "${PASSWORD}".`,
+  );
   await ds.destroy();
 }
 
-main().catch((err) => {
+main().catch((err: unknown) => {
   console.error('Seed failed:', err);
   process.exit(1);
 });
