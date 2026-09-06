@@ -40,7 +40,10 @@ export class Reaction {
   @Column({ type: 'uuid' })
   userId: string;
 
-  @ApiProperty({ description: 'Target type (post or comment)', enum: ['post', 'comment'] })
+  @ApiProperty({
+    description: 'Target type (post or comment)',
+    enum: ['post', 'comment'],
+  })
   @Column({ type: 'varchar', length: 20 })
   targetType: ReactionTargetType;
 

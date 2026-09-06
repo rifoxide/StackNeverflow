@@ -49,7 +49,11 @@ export class DevelopersController {
    */
   @Public()
   @Get(':id')
-  @ApiOperation({ summary: 'Get developer profile by ID', description: '🌐 Public. Fetches developer profile with skills and work experiences.' })
+  @ApiOperation({
+    summary: 'Get developer profile by ID',
+    description:
+      '🌐 Public. Fetches developer profile with skills and work experiences.',
+  })
   @ApiParam({ name: 'id', description: 'User UUID', format: 'uuid' })
   @ApiResponse({
     status: 200,
@@ -73,7 +77,11 @@ export class DevelopersController {
    */
   @Get('me')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get own developer profile', description: '🔒 Requires authentication. Returns own profile with skills and experiences.' })
+  @ApiOperation({
+    summary: 'Get own developer profile',
+    description:
+      '🔒 Requires authentication. Returns own profile with skills and experiences.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Returns own profile with skills and experiences',
@@ -98,8 +106,15 @@ export class DevelopersController {
   @Put('me/skills')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update own skills', description: '🔒 Requires authentication. Replaces entire skills array (transactional delete-then-insert).' })
-  @ApiBody({ type: UpdateSkillsDto, description: 'Skills array (replaces existing)' })
+  @ApiOperation({
+    summary: 'Update own skills',
+    description:
+      '🔒 Requires authentication. Replaces entire skills array (transactional delete-then-insert).',
+  })
+  @ApiBody({
+    type: UpdateSkillsDto,
+    description: 'Skills array (replaces existing)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Skills updated successfully',
@@ -131,8 +146,15 @@ export class DevelopersController {
   @Put('me/experiences')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update own work experiences', description: '🔒 Requires authentication. Replaces entire experiences array (transactional delete-then-insert).' })
-  @ApiBody({ type: UpdateExperiencesDto, description: 'Experiences array (replaces existing)' })
+  @ApiOperation({
+    summary: 'Update own work experiences',
+    description:
+      '🔒 Requires authentication. Replaces entire experiences array (transactional delete-then-insert).',
+  })
+  @ApiBody({
+    type: UpdateExperiencesDto,
+    description: 'Experiences array (replaces existing)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Experiences updated successfully',
@@ -168,7 +190,11 @@ export class DevelopersController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload profile picture', description: '🔒 Requires authentication. Accepts image files (JPEG, PNG, GIF, WEBP) up to 5MB.' })
+  @ApiOperation({
+    summary: 'Upload profile picture',
+    description:
+      '🔒 Requires authentication. Accepts image files (JPEG, PNG, GIF, WEBP) up to 5MB.',
+  })
   @ApiBody({
     description: 'Image file (max 5MB)',
     schema: {
@@ -188,7 +214,8 @@ export class DevelopersController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid file type or size (max 5MB, allowed: JPEG, PNG, GIF, WEBP)',
+    description:
+      'Invalid file type or size (max 5MB, allowed: JPEG, PNG, GIF, WEBP)',
   })
   @ApiResponse({
     status: 401,
@@ -212,9 +239,17 @@ export class DevelopersController {
       }
 
       // Validate file type
-      const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedMimeTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+      ];
       if (!allowedMimeTypes.includes(data.mimetype)) {
-        throw new BadRequestException('Only image files (JPEG, PNG, GIF, WEBP) are allowed');
+        throw new BadRequestException(
+          'Only image files (JPEG, PNG, GIF, WEBP) are allowed',
+        );
       }
 
       // Read file buffer
@@ -226,7 +261,7 @@ export class DevelopersController {
       }
 
       // Generate unique filename
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const uniqueSuffix = `${String(Date.now())}-${String(Math.round(Math.random() * 1e9))}`;
       const ext = extname(data.filename);
       const filename = `avatar-${uniqueSuffix}${ext}`;
 
@@ -240,7 +275,7 @@ export class DevelopersController {
 
       // Update user profile with new picture URL
       const profilePictureUrl = `/uploads/avatars/${filename}`;
-      return this.developersService.updateProfilePicture(
+      return await this.developersService.updateProfilePicture(
         user.id,
         profilePictureUrl,
       );

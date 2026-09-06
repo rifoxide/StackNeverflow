@@ -29,7 +29,8 @@ export class PostsService {
    */
   async create(authorId: string, createPostDto: CreatePostDto): Promise<Post> {
     const post = this.postRepository.create({
-      ...createPostDto,
+      title: createPostDto.title,
+      body: createPostDto.body,
       authorId,
     });
 
@@ -58,10 +59,7 @@ export class PostsService {
 
     // Build where clause for search
     const where = search
-      ? [
-          { title: ILike(`%${search}%`) },
-          { body: ILike(`%${search}%`) },
-        ]
+      ? [{ title: ILike(`%${search}%`) }, { body: ILike(`%${search}%`) }]
       : {};
 
     const [data, total] = await this.postRepository.findAndCount({
@@ -191,8 +189,7 @@ export class PostsService {
       throw new NotFoundException(`Post with ID ${postId} not found`);
     }
 
-    const score =
-      post.likesCount - post.dislikesCount + post.commentCount * 2;
+    const score = post.likesCount - post.dislikesCount + post.commentCount * 2;
 
     await this.postRepository.update(postId, { rankScore: score });
   }

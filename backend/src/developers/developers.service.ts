@@ -117,7 +117,9 @@ export class DevelopersService {
     userId: string,
     profilePictureUrl: string,
   ): Promise<User> {
-    await this.userRepository.update(userId, { profilePicture: profilePictureUrl });
+    await this.userRepository.update(userId, {
+      profilePicture: profilePictureUrl,
+    });
 
     const user = await this.userRepository.findOne({
       where: { id: userId },

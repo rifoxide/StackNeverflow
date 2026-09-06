@@ -46,13 +46,7 @@ export class ReactionsService {
     private readonly dataSource: DataSource,
     private readonly postsService: PostsService,
     private readonly notificationsService: NotificationsService,
-  ) {
-    // Repositories are reserved for non-transactional reads. Mutating
-    // paths always go through the dataSource transaction so writes stay
-    // consistent with count updates.
-    void this.postRepository;
-    void this.commentRepository;
-  }
+  ) {}
 
   /**
    * Toggle a reaction for a user on a target.
@@ -133,7 +127,11 @@ export class ReactionsService {
       // Recalculate denormalized counts from the source of truth.
       // COUNT queries are cheap because we have an index on (targetType, targetId).
       const likeCount = await manager.count(Reaction, {
-        where: { targetType: dto.targetType, targetId: dto.targetId, type: 'like' },
+        where: {
+          targetType: dto.targetType,
+          targetId: dto.targetId,
+          type: 'like',
+        },
       });
       const dislikeCount = await manager.count(Reaction, {
         where: {
@@ -167,7 +165,7 @@ export class ReactionsService {
           });
         }
       } else if (comment) {
-        await manager.update(Comment, comment!.id, {
+        await manager.update(Comment, comment.id, {
           likesCount: likeCount,
           dislikesCount: dislikeCount,
         });

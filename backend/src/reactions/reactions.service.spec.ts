@@ -1,8 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ReactionsService } from './reactions.service.js';
@@ -10,6 +7,7 @@ import { Reaction } from './reaction.entity.js';
 import { Post } from '../posts/post.entity.js';
 import { Comment } from '../comments/comment.entity.js';
 import { PostsService } from '../posts/posts.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 
 describe('ReactionsService', () => {
   let service: ReactionsService;
@@ -24,6 +22,11 @@ describe('ReactionsService', () => {
 
   const mockPostsService = {
     recalculateRankScore: vi.fn(),
+  };
+
+  const mockNotificationsService = {
+    createPostReactionNotification: vi.fn(),
+    createCommentReactionNotification: vi.fn(),
   };
 
   const mockEntityManager = {
@@ -63,6 +66,10 @@ describe('ReactionsService', () => {
           provide: PostsService,
           useValue: mockPostsService,
         },
+        {
+          provide: NotificationsService,
+          useValue: mockNotificationsService,
+        },
       ],
     }).compile();
 
@@ -76,13 +83,19 @@ describe('ReactionsService', () => {
   describe('toggle', () => {
     const userId = 'user-123';
     const postId = 'post-123';
+    const actorUser = { id: userId, name: 'Actor User' };
 
     it('should create a new reaction when none exists', async () => {
-      const dto = { targetType: 'post' as const, targetId: postId, type: 'like' as const };
-      const post = { id: postId } as Post;
+      const dto = {
+        targetType: 'post' as const,
+        targetId: postId,
+        type: 'like' as const,
+      };
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post) // Post lookup
+        .mockResolvedValueOnce(actorUser) // Actor lookup
         .mockResolvedValueOnce(null); // No existing reaction
 
       mockEntityManager.create.mockReturnValue({ userId, ...dto });
@@ -93,11 +106,10 @@ describe('ReactionsService', () => {
       const result = await service.toggle(userId, dto);
 
       expect(mockEntityManager.save).toHaveBeenCalled();
-      expect(mockEntityManager.update).toHaveBeenCalledWith(
-        Post,
-        postId,
-        { likesCount: 1, dislikesCount: 0 },
-      );
+      expect(mockEntityManager.update).toHaveBeenCalledWith(Post, postId, {
+        likesCount: 1,
+        dislikesCount: 0,
+      });
       expect(result).toEqual({
         userReaction: 'like',
         likesCount: 1,
@@ -106,12 +118,17 @@ describe('ReactionsService', () => {
     });
 
     it('should remove reaction when toggling same type', async () => {
-      const dto = { targetType: 'post' as const, targetId: postId, type: 'like' as const };
-      const post = { id: postId } as Post;
+      const dto = {
+        targetType: 'post' as const,
+        targetId: postId,
+        type: 'like' as const,
+      };
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
       const existingReaction = { id: 'reaction-123', type: 'like' };
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post)
+        .mockResolvedValueOnce(actorUser)
         .mockResolvedValueOnce(existingReaction);
 
       mockEntityManager.count
@@ -127,12 +144,17 @@ describe('ReactionsService', () => {
     });
 
     it('should switch reaction when toggling opposite type', async () => {
-      const dto = { targetType: 'post' as const, targetId: postId, type: 'like' as const };
-      const post = { id: postId } as Post;
+      const dto = {
+        targetType: 'post' as const,
+        targetId: postId,
+        type: 'like' as const,
+      };
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
       const existingReaction = { id: 'reaction-123', type: 'dislike' };
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post)
+        .mockResolvedValueOnce(actorUser)
         .mockResolvedValueOnce(existingReaction);
 
       mockEntityManager.count
@@ -154,18 +176,24 @@ describe('ReactionsService', () => {
 
     it('should update comment counts for comment reactions', async () => {
       const commentId = 'comment-123';
-      const dto = { targetType: 'comment' as const, targetId: commentId, type: 'like' as const };
-      const comment = { id: commentId } as Comment;
+      const dto = {
+        targetType: 'comment' as const,
+        targetId: commentId,
+        type: 'like' as const,
+      };
+      const comment = {
+        id: commentId,
+        author: { id: 'comment-author-1' },
+        post: { id: postId },
+      } as Comment;
 
-      // The service checks targetType first - for 'comment' it skips post lookup
       mockEntityManager.findOne
-        .mockResolvedValueOnce(comment) // Comment lookup (targetType is 'comment')
+        .mockResolvedValueOnce(comment) // Comment lookup
+        .mockResolvedValueOnce(actorUser) // Actor lookup
         .mockResolvedValueOnce(null); // No existing reaction
 
       mockEntityManager.create.mockReturnValue({ userId, ...dto });
-      mockEntityManager.count
-        .mockResolvedValueOnce(1)
-        .mockResolvedValueOnce(0);
+      mockEntityManager.count.mockResolvedValueOnce(1).mockResolvedValueOnce(0);
 
       await service.toggle(userId, dto);
 
@@ -177,7 +205,11 @@ describe('ReactionsService', () => {
     });
 
     it('should throw NotFoundException if post not found', async () => {
-      const dto = { targetType: 'post' as const, targetId: postId, type: 'like' as const };
+      const dto = {
+        targetType: 'post' as const,
+        targetId: postId,
+        type: 'like' as const,
+      };
 
       mockEntityManager.findOne.mockResolvedValueOnce(null); // Post not found
 
@@ -195,11 +227,13 @@ describe('ReactionsService', () => {
 
     it('should throw NotFoundException if comment not found', async () => {
       const commentId = 'comment-123';
-      const dto = { targetType: 'comment' as const, targetId: commentId, type: 'like' as const };
+      const dto = {
+        targetType: 'comment' as const,
+        targetId: commentId,
+        type: 'like' as const,
+      };
 
-      mockEntityManager.findOne
-        .mockResolvedValueOnce(null) // No post
-        .mockResolvedValueOnce(null); // Comment not found
+      mockEntityManager.findOne.mockResolvedValueOnce(null); // Comment not found
 
       await expect(service.toggle(userId, dto)).rejects.toThrow(
         NotFoundException,

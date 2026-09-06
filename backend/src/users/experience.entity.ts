@@ -25,7 +25,10 @@ export class Experience {
   @Column({ type: 'uuid' })
   userId: string;
 
-  @ApiProperty({ description: 'Job title', example: 'Senior Software Engineer' })
+  @ApiProperty({
+    description: 'Job title',
+    example: 'Senior Software Engineer',
+  })
   @Column({ length: 200 })
   title: string;
 
@@ -37,11 +40,19 @@ export class Experience {
   @Column({ type: 'date' })
   fromDate: Date;
 
-  @ApiProperty({ description: 'End date (null if current)', nullable: true, example: '2023-12-31' })
+  @ApiProperty({
+    description: 'End date (null if current)',
+    nullable: true,
+    example: '2023-12-31',
+  })
   @Column({ type: 'date', nullable: true })
   toDate: Date | null;
 
-  @ApiProperty({ description: 'Job description', nullable: true, example: 'Led development of...' })
+  @ApiProperty({
+    description: 'Job description',
+    nullable: true,
+    example: 'Led development of...',
+  })
   @Column({ type: 'text', nullable: true })
   description: string | null;
 

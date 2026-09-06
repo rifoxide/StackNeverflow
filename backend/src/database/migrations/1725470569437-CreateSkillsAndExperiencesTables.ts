@@ -1,12 +1,15 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
 
 /**
  * Migration: Create skills and experiences tables
  * Implements B2 requirement: Developer profiles with skills and work experience
  */
-export class CreateSkillsAndExperiencesTables1725470569437
-  implements MigrationInterface
-{
+export class CreateSkillsAndExperiencesTables1725470569437 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create skills table
     await queryRunner.createTable(

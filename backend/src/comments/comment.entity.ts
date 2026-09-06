@@ -40,11 +40,17 @@ export class Comment {
   /**
    * Null for top-level comments. Set to the parent comment's id for replies.
    */
-  @ApiProperty({ description: 'Parent comment ID (null for top-level)', nullable: true })
+  @ApiProperty({
+    description: 'Parent comment ID (null for top-level)',
+    nullable: true,
+  })
   @Column({ type: 'uuid', nullable: true })
   parentCommentId: string | null;
 
-  @ApiProperty({ description: 'Comment text content', example: 'Great question!' })
+  @ApiProperty({
+    description: 'Comment text content',
+    example: 'Great question!',
+  })
   @Column({ type: 'text' })
   body: string;
 
@@ -79,7 +85,10 @@ export class Comment {
   @JoinColumn({ name: 'parentCommentId' })
   parent: Comment | null;
 
-  @ApiProperty({ description: 'Child comments (replies)', type: () => [Comment] })
+  @ApiProperty({
+    description: 'Child comments (replies)',
+    type: () => [Comment],
+  })
   @OneToMany('Comment', 'parent')
   children: Comment[];
 }

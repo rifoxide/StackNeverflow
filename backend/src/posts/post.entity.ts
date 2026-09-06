@@ -26,11 +26,17 @@ export class Post {
   @Column({ type: 'uuid' })
   authorId: string;
 
-  @ApiProperty({ description: 'Post title', example: 'How to use TypeORM migrations?' })
+  @ApiProperty({
+    description: 'Post title',
+    example: 'How to use TypeORM migrations?',
+  })
   @Column({ length: 255 })
   title: string;
 
-  @ApiProperty({ description: 'Post body content (markdown supported)', example: 'I need help with...' })
+  @ApiProperty({
+    description: 'Post body content (markdown supported)',
+    example: 'I need help with...',
+  })
   @Column({ type: 'text' })
   body: string;
 
@@ -54,7 +60,10 @@ export class Post {
   @Column({ type: 'int', default: 0 })
   commentCount: number;
 
-  @ApiProperty({ description: 'Calculated rank score for sorting', example: 18 })
+  @ApiProperty({
+    description: 'Calculated rank score for sorting',
+    example: 18,
+  })
   @Column({ type: 'float', default: 0 })
   rankScore: number;
 

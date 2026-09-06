@@ -123,16 +123,7 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Glassmorphism Comment Tree Lines & Mask */
-.comment-line-mask {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 247, 242, 0.9) 48%, rgba(245, 243, 255, 0.92));
-}
-
-.dark .comment-line-mask {
-  background: linear-gradient(135deg, rgba(32, 32, 42, 0.95), rgba(28, 25, 35, 0.92) 48%, rgba(30, 27, 46, 0.95));
-}
+/* Glassmorphism Textareas */
 textarea,
 [data-slot="textarea"],
 .textarea-glass {

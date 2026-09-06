@@ -244,9 +244,9 @@ describe('PostsService', () => {
     it('should throw NotFoundException if post not found', async () => {
       mockRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.recalculateRankScore('nonexistent'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.recalculateRankScore('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

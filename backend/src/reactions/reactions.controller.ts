@@ -44,16 +44,24 @@ export class ReactionsController {
   @Post()
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Toggle a reaction on a post or comment', description: '🔒 Requires authentication. Adds, updates, or removes like/dislike reactions. Returns new state and counts.' })
-  @ApiBody({ type: ToggleReactionDto, description: 'Reaction toggle payload (targetType, targetId, reactionType)' })
-  @ApiResponse({ status: 200, description: 'Returns new reaction state (userReaction, likeCount, dislikeCount)' })
+  @ApiOperation({
+    summary: 'Toggle a reaction on a post or comment',
+    description:
+      '🔒 Requires authentication. Adds, updates, or removes like/dislike reactions. Returns new state and counts.',
+  })
+  @ApiBody({
+    type: ToggleReactionDto,
+    description: 'Reaction toggle payload (targetType, targetId, reactionType)',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns new reaction state (userReaction, likeCount, dislikeCount)',
+  })
   @ApiResponse({ status: 400, description: 'Invalid payload or target type' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Target post or comment not found' })
-  async toggle(
-    @CurrentUser() user: User,
-    @Body() dto: ToggleReactionDto,
-  ) {
+  async toggle(@CurrentUser() user: User, @Body() dto: ToggleReactionDto) {
     return this.reactionsService.toggle(user.id, dto);
   }
 
@@ -63,10 +71,21 @@ export class ReactionsController {
    */
   @Get('me')
   @ApiBearerAuth()
-  @ApiOperation({ summary: "Get current user's reaction on a target", description: '🔒 Requires authentication. Returns user reaction (like/dislike/null) for a single post or comment.' })
-  @ApiQuery({ name: 'targetType', enum: TARGET_TYPE_VALUES, description: 'Target type (post or comment)' })
+  @ApiOperation({
+    summary: "Get current user's reaction on a target",
+    description:
+      '🔒 Requires authentication. Returns user reaction (like/dislike/null) for a single post or comment.',
+  })
+  @ApiQuery({
+    name: 'targetType',
+    enum: TARGET_TYPE_VALUES,
+    description: 'Target type (post or comment)',
+  })
   @ApiQuery({ name: 'targetId', format: 'uuid', description: 'Target UUID' })
-  @ApiResponse({ status: 200, description: 'Returns reaction type (like/dislike) or null' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns reaction type (like/dislike) or null',
+  })
   @ApiResponse({ status: 400, description: 'Invalid target type' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getMine(
@@ -90,15 +109,29 @@ export class ReactionsController {
    */
   @Get('me/batch')
   @ApiBearerAuth()
-  @ApiOperation({ summary: "Get current user's reactions for many targets", description: '🔒 Requires authentication. Batch fetch reactions for multiple posts or comments (max 200).' })
-  @ApiQuery({ name: 'targetType', enum: TARGET_TYPE_VALUES, description: 'Target type (post or comment)' })
+  @ApiOperation({
+    summary: "Get current user's reactions for many targets",
+    description:
+      '🔒 Requires authentication. Batch fetch reactions for multiple posts or comments (max 200).',
+  })
+  @ApiQuery({
+    name: 'targetType',
+    enum: TARGET_TYPE_VALUES,
+    description: 'Target type (post or comment)',
+  })
   @ApiQuery({
     name: 'targetIds',
     description: 'Comma-separated target UUIDs (max 200)',
     example: 'id1,id2,id3',
   })
-  @ApiResponse({ status: 200, description: 'Returns map of targetId -> reaction (like/dislike/null)' })
-  @ApiResponse({ status: 400, description: 'Too many ids (max 200) or invalid target type' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns map of targetId -> reaction (like/dislike/null)',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Too many ids (max 200) or invalid target type',
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getMineBatch(
     @CurrentUser() user: User,

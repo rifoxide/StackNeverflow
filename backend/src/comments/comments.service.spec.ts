@@ -1,14 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CommentsService } from './comments.service.js';
 import { Comment } from './comment.entity.js';
 import { Post } from '../posts/post.entity.js';
 import { PostsService } from '../posts/posts.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 
 describe('CommentsService', () => {
   let service: CommentsService;
@@ -23,6 +21,11 @@ describe('CommentsService', () => {
 
   const mockPostsService = {
     recalculateRankScore: vi.fn(),
+  };
+
+  const mockNotificationsService = {
+    createPostCommentNotification: vi.fn(),
+    createCommentReplyNotification: vi.fn(),
   };
 
   const mockEntityManager = {
@@ -56,6 +59,10 @@ describe('CommentsService', () => {
           provide: PostsService,
           useValue: mockPostsService,
         },
+        {
+          provide: NotificationsService,
+          useValue: mockNotificationsService,
+        },
       ],
     }).compile();
 
@@ -69,10 +76,11 @@ describe('CommentsService', () => {
   describe('create', () => {
     const postId = 'post-123';
     const authorId = 'user-123';
+    const authorUser = { id: authorId, name: 'Test Author' };
 
     it('should create a top-level comment', async () => {
       const dto = { body: 'Great post!', parentCommentId: undefined };
-      const post = { id: postId } as Post;
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
       const createdComment = {
         id: 'comment-123',
         postId,
@@ -83,7 +91,8 @@ describe('CommentsService', () => {
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post) // Post lookup
-        .mockResolvedValueOnce(createdComment); // Return with author
+        .mockResolvedValueOnce(authorUser) // Author lookup
+        .mockResolvedValueOnce(createdComment); // Final findOne with author
 
       mockEntityManager.create.mockReturnValue(createdComment);
       mockEntityManager.save.mockResolvedValue(createdComment);
@@ -110,8 +119,12 @@ describe('CommentsService', () => {
     it('should create a reply with valid parent', async () => {
       const parentCommentId = 'comment-parent';
       const dto = { body: 'Thanks!', parentCommentId };
-      const post = { id: postId } as Post;
-      const parentComment = { id: parentCommentId, postId } as Comment;
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
+      const parentComment = {
+        id: parentCommentId,
+        postId,
+        author: { id: 'parent-author-1' },
+      } as Comment;
       const createdReply = {
         id: 'comment-reply',
         postId,
@@ -122,8 +135,9 @@ describe('CommentsService', () => {
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post) // Post lookup
+        .mockResolvedValueOnce(authorUser) // Author lookup
         .mockResolvedValueOnce(parentComment) // Parent comment lookup
-        .mockResolvedValueOnce(createdReply); // Return with author
+        .mockResolvedValueOnce(createdReply); // Final findOne with author
 
       mockEntityManager.create.mockReturnValue(createdReply);
       mockEntityManager.save.mockResolvedValue(createdReply);
@@ -152,10 +166,11 @@ describe('CommentsService', () => {
     it('should throw BadRequestException if parent comment not found', async () => {
       const parentCommentId = 'nonexistent';
       const dto = { body: 'Reply', parentCommentId };
-      const post = { id: postId } as Post;
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post) // Post found
+        .mockResolvedValueOnce(authorUser) // Author found
         .mockResolvedValueOnce(null); // Parent comment not found
 
       await expect(service.create(postId, authorId, dto)).rejects.toThrow(
@@ -166,6 +181,7 @@ describe('CommentsService', () => {
       mockEntityManager.findOne.mockClear();
       mockEntityManager.findOne
         .mockResolvedValueOnce(post)
+        .mockResolvedValueOnce(authorUser)
         .mockResolvedValueOnce(null);
 
       await expect(service.create(postId, authorId, dto)).rejects.toThrow(
@@ -176,11 +192,16 @@ describe('CommentsService', () => {
     it('should throw BadRequestException if parent belongs to different post', async () => {
       const parentCommentId = 'comment-other';
       const dto = { body: 'Reply', parentCommentId };
-      const post = { id: postId } as Post;
-      const parentComment = { id: parentCommentId, postId: 'other-post' } as Comment;
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
+      const parentComment = {
+        id: parentCommentId,
+        postId: 'other-post',
+        author: { id: 'parent-author-1' },
+      } as Comment;
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post) // Post found
+        .mockResolvedValueOnce(authorUser) // Author found
         .mockResolvedValueOnce(parentComment); // Parent from different post
 
       await expect(service.create(postId, authorId, dto)).rejects.toThrow(
@@ -191,6 +212,7 @@ describe('CommentsService', () => {
       mockEntityManager.findOne.mockClear();
       mockEntityManager.findOne
         .mockResolvedValueOnce(post)
+        .mockResolvedValueOnce(authorUser)
         .mockResolvedValueOnce(parentComment);
 
       await expect(service.create(postId, authorId, dto)).rejects.toThrow(
@@ -200,12 +222,12 @@ describe('CommentsService', () => {
 
     it('should increment commentCount in transaction', async () => {
       const dto = { body: 'Comment', parentCommentId: undefined };
-      const post = { id: postId } as Post;
+      const post = { id: postId, author: { id: 'post-author-1' } } as Post;
       const createdComment = { id: 'comment-123' } as Comment;
 
       mockEntityManager.findOne
         .mockResolvedValueOnce(post)
-        .mockResolvedValueOnce(createdComment);
+        .mockResolvedValueOnce(authorUser);
 
       mockEntityManager.create.mockReturnValue(createdComment);
       mockEntityManager.save.mockResolvedValue(createdComment);

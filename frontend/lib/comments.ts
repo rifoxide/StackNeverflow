@@ -37,6 +37,21 @@ export function groupCommentsByParent(
 }
 
 /**
+ * Count all descendant replies nested under a given comment id.
+ */
+export function countCommentDescendants(
+  commentId: string,
+  commentsByParent: Map<string | null, Comment[]>,
+): number {
+  const directChildren = commentsByParent.get(commentId) ?? [];
+  let total = directChildren.length;
+  for (const child of directChildren) {
+    total += countCommentDescendants(child.id, commentsByParent);
+  }
+  return total;
+}
+
+/**
  * Relative time string ("just now", "5m ago", "3h ago", "2d ago",
  * then a localized date). Purely string-based so the result is
  * consistent across server and client renders.

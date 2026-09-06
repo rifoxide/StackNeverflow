@@ -39,11 +39,21 @@ export class CommentsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a comment or reply on a post', description: '🔒 Requires authentication. Creates a top-level comment or reply to another comment.' })
+  @ApiOperation({
+    summary: 'Create a comment or reply on a post',
+    description:
+      '🔒 Requires authentication. Creates a top-level comment or reply to another comment.',
+  })
   @ApiParam({ name: 'postId', description: 'Target post UUID', format: 'uuid' })
-  @ApiBody({ type: CreateCommentDto, description: 'Comment content and optional parent comment ID for replies' })
+  @ApiBody({
+    type: CreateCommentDto,
+    description: 'Comment content and optional parent comment ID for replies',
+  })
   @ApiResponse({ status: 201, description: 'Comment created successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid parent comment or validation error' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid parent comment or validation error',
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Post not found' })
   async create(
@@ -61,11 +71,16 @@ export class CommentsController {
    */
   @Public()
   @Get()
-  @ApiOperation({ summary: 'List all comments for a post', description: '🌐 Public. Returns flat list of comments with author information, ordered by creation date.' })
+  @ApiOperation({
+    summary: 'List all comments for a post',
+    description:
+      '🌐 Public. Returns flat list of comments with author information, ordered by creation date.',
+  })
   @ApiParam({ name: 'postId', description: 'Target post UUID', format: 'uuid' })
   @ApiResponse({
     status: 200,
-    description: 'Flat list of comments with author info and parent comment references',
+    description:
+      'Flat list of comments with author info and parent comment references',
   })
   @ApiResponse({ status: 404, description: 'Post not found' })
   async findAll(@Param('postId') postId: string) {

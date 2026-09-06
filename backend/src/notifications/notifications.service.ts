@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification, NotificationType } from './notification.entity.js';
-import { NotificationDto, NotificationListDto } from './dto/notification.dto.js';
+import {
+  NotificationDto,
+  NotificationListDto,
+} from './dto/notification.dto.js';
 
 @Injectable()
 export class NotificationsService {
@@ -134,13 +137,14 @@ export class NotificationsService {
   ): Promise<NotificationListDto> {
     const skip = (page - 1) * limit;
 
-    const [notifications, total] = await this.notificationsRepository.findAndCount({
-      where: { recipientId: userId },
-      relations: { actor: true },
-      order: { createdAt: 'DESC' },
-      take: limit,
-      skip,
-    });
+    const [notifications, total] =
+      await this.notificationsRepository.findAndCount({
+        where: { recipientId: userId },
+        relations: { actor: true },
+        order: { createdAt: 'DESC' },
+        take: limit,
+        skip,
+      });
 
     const unreadCount = await this.notificationsRepository.count({
       where: { recipientId: userId, isRead: false },
@@ -196,7 +200,10 @@ export class NotificationsService {
   /**
    * Delete a notification.
    */
-  async deleteNotification(notificationId: string, userId: string): Promise<void> {
+  async deleteNotification(
+    notificationId: string,
+    userId: string,
+  ): Promise<void> {
     await this.notificationsRepository.delete({
       id: notificationId,
       recipientId: userId,

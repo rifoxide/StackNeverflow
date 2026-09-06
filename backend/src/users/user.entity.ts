@@ -23,7 +23,10 @@ import { Experience } from './experience.entity.js';
  */
 @Entity('users')
 export class User {
-  @ApiProperty({ description: 'User unique identifier', example: '550e8400-e29b-41d4-a716-446655440000' })
+  @ApiProperty({
+    description: 'User unique identifier',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,7 +34,10 @@ export class User {
   @Column({ length: 100 })
   name: string;
 
-  @ApiProperty({ description: 'User email address', example: 'john@example.com' })
+  @ApiProperty({
+    description: 'User email address',
+    example: 'john@example.com',
+  })
   @Column({ unique: true, length: 255 })
   email: string;
 
@@ -52,7 +58,11 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   refreshTokenHash: string | null;
 
-  @ApiProperty({ description: 'Profile picture URL', example: '/uploads/avatars/abc123.jpg', required: false })
+  @ApiProperty({
+    description: 'Profile picture URL',
+    example: '/uploads/avatars/abc123.jpg',
+    required: false,
+  })
   @Column({ type: 'varchar', length: 500, nullable: true })
   profilePicture: string | null;
 
@@ -68,7 +78,10 @@ export class User {
   @OneToMany(() => Skill, (skill) => skill.user)
   skills: Skill[];
 
-  @ApiProperty({ description: 'User work experiences', type: () => [Experience] })
+  @ApiProperty({
+    description: 'User work experiences',
+    type: () => [Experience],
+  })
   @OneToMany(() => Experience, (experience) => experience.user)
   experiences: Experience[];
 }
