@@ -269,12 +269,11 @@ export function Navbar() {
               {isAuthenticated && (
                 <Button
                   size="sm"
-                  isIconOnly
                   onPress={() => router.push('/posts/new')}
                   className="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white shadow-md shadow-brand-500/30"
-                  aria-label="Create post"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4 mr-1" />
+                  <span className="font-medium">Post</span>
                 </Button>
               )}
               <AuthSection />

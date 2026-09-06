@@ -1,5 +1,12 @@
 # StackNeverflow — Implementation Plan
 
+> **Project Documentation Links:**
+> - [PROJECT_INIT.md](PROJECT_INIT.md) — Initial project requirements & technical specifications
+> - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Phased task breakdown & execution checklist
+> - [README.md](README.md) — Main system setup, architecture overview, and API docs
+> - [AI_USAGE.md](AI_USAGE.md) — Agentic software engineering workflow & review report
+> - [AGENTS.md](AGENTS.md) — AI agent system context, execution rules, and coding standards
+
 ## Context
 
 Build a production-grade developer community platform from an empty repo. Requirements are in `PROJECT_INIT.md`: auth with refresh tokens, posts, threaded comments, reactions (like/dislike), developer profiles, post ranking, Swagger, and a responsive Next.js frontend — all backed by PostgreSQL.

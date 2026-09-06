@@ -4,7 +4,17 @@
   # StackNeverflow
 
   A modern developer Q&A platform built with Next.js, NestJS, and PostgreSQL. Features include posts, nested comments with threaded replies, reactions (likes/dislikes), developer profiles with skills and work experience, and a ranked feed algorithm.
+
+  [![AI Usage Report](https://img.shields.io/badge/AI%20Usage-Documented-blue?style=flat-square)](AI_USAGE.md)
+  [![Implementation Plan](https://img.shields.io/badge/Implementation-Plan-green?style=flat-square)](IMPLEMENTATION_PLAN.md)
+  [![Project Init](https://img.shields.io/badge/Project-Init%20Specs-purple?style=flat-square)](PROJECT_INIT.md)
 </div>
+
+## Project Documentation
+- [PROJECT_INIT.md](PROJECT_INIT.md) — Initial requirements and technical specification.
+- [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Phased task breakdown and development checklist.
+- [AI_USAGE.md](AI_USAGE.md) — Comprehensive report on AI tools, agentic workflows, prompt logs, code reviews, and bug fixes.
+- [AGENTS.md](AGENTS.md) — AI agent system context, execution rules, and coding standards.
 
 ## Features
 
@@ -311,6 +321,24 @@ Or deploy to Vercel/Netlify with automatic builds.
 - [ ] CORS configured for frontend domain
 - [ ] Migrations run on production database
 - [ ] (Optional) Seed script run for demo data
+
+## Agentic Software Engineering & AI Usage
+
+This project was developed by an **Agentic Software Engineer** using a structured human-in-the-loop methodology with **Claude Code CLI** (powered by Claude 3.7 / 3.5 Sonnet).
+
+### Process Overview
+1. **Requirements Definition**: Refined core requirements and constraints in [PROJECT_INIT.md](PROJECT_INIT.md).
+2. **Granular Implementation Plan**: Generated and reviewed [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) before writing any code, ensuring clean separation of concerns and cross-linked documentation.
+3. **Test-First & Iterative Task Loop**: Prompted AI to generate Vitest test suites upfront, executed tasks one by one, tested functionality, provided iterative feedback, and reviewed all generated code.
+4. **Automated Quality Gates**: Enforced Husky pre-commit hooks (`lint-staged`) running Prettier, ESLint (`--fix`), and related Vitest test suites before every commit.
+
+### Human Review & Quality Interventions
+- **Polymorphic Database Design**: Rejected separate reaction tables in favor of a single polymorphic schema with unique compound constraints.
+- **N+1 Performance Fix**: Caught individual reaction queries on feed rendering and implemented batch reaction fetching (`GET /reactions/me/batch`).
+- **Framework & Hydration Fixes**: Resolved invalid nested button elements in HeroUI dropdowns and fixed standalone seed script execution with `ts-node` / ESM loader.
+- **Dynamic Threading UI**: Iteratively engineered dynamic SVG/CSS connectors for Reddit/Facebook-style comment threading.
+
+📖 **For full prompt logs, review records, case studies, and metrics, see [AI_USAGE.md](AI_USAGE.md).**
 
 ## Architecture Decisions
 

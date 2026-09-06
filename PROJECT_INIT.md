@@ -1,4 +1,13 @@
-## Project: StackNeverflow - A Dev Community
+# Project: StackNeverflow - A Dev Community
+
+> **Project Documentation Links:**
+> - [PROJECT_INIT.md](PROJECT_INIT.md) — Initial project requirements & technical specifications (this document)
+> - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Phased task breakdown & execution checklist
+> - [README.md](README.md) — Main system setup, architecture overview, and API docs
+> - [AI_USAGE.md](AI_USAGE.md) — Agentic software engineering workflow & review report
+> - [AGENTS.md](AGENTS.md) — AI agent system context, execution rules, and coding standards
+
+---
 
 Build a **developer community** platform where:
 
