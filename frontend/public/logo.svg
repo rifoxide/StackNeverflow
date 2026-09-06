@@ -1,15 +1,1 @@
-<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background circle -->
-  <circle cx="100" cy="100" r="95" fill="#0070F3" stroke="#0056D2" stroke-width="3"/>
-
-  <!-- Stack of layers -->
-  <rect x="50" y="50" width="100" height="20" rx="4" fill="#FFFFFF" opacity="0.9"/>
-  <rect x="50" y="80" width="100" height="20" rx="4" fill="#FFFFFF" opacity="0.7"/>
-  <rect x="50" y="110" width="100" height="20" rx="4" fill="#FFFFFF" opacity="0.5"/>
-
-  <!-- Infinity symbol (for "never" overflow) -->
-  <path d="M65 155 Q75 145, 85 155 Q95 165, 105 155 Q115 145, 125 155 Q135 165, 145 155"
-        stroke="#FFFFFF" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <circle cx="75" cy="155" r="3" fill="#FFFFFF"/>
-  <circle cx="135" cy="155" r="3" fill="#FFFFFF"/>
-</svg>
+<svg class="h-9 w-9" viewBox="0 0 90 110" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="stack-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FF9900"></stop><stop offset="100%" stop-color="#FF5500"></stop></linearGradient><linearGradient id="box-grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#8A929A"></stop><stop offset="100%" stop-color="#545D66"></stop></linearGradient></defs><g id="icon" transform="translate(10, 5)"><path d="M 10 35 L 10 75 L 30 75" stroke="url(#box-grad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M 80 35 L 80 75 L 60 75" stroke="url(#box-grad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></path><line x1="33" y1="75" x2="38" y2="75" stroke="#8A929A" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 2"></line><line x1="52" y1="75" x2="57" y2="75" stroke="#8A929A" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 2"></line><rect x="23" y="15" width="44" height="7" rx="3.5" fill="url(#stack-grad)"></rect><rect x="23" y="27" width="44" height="7" rx="3.5" fill="url(#stack-grad)" transform="rotate(4 45 30)"></rect><rect x="23" y="40" width="44" height="7" rx="3.5" fill="url(#stack-grad)" transform="rotate(12 45 43)"></rect><g class="falling-bar-1"><rect x="24" y="60" width="44" height="7" rx="3.5" fill="url(#stack-grad)" transform="rotate(-12 46 63)"></rect></g><g class="falling-bar-2"><rect x="35" y="82" width="44" height="7" rx="3.5" fill="url(#stack-grad)" transform="rotate(35 57 85)"></rect></g><path d="M 32 78 Q 28 85 25 92" stroke="#FF5500" stroke-width="2" stroke-linecap="round" opacity="0.6"></path><path d="M 58 78 Q 62 83 66 88" stroke="#FF5500" stroke-width="2" stroke-linecap="round" opacity="0.6"></path></g></svg>
