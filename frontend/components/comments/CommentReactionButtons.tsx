@@ -47,7 +47,7 @@ export function CommentReactionButtons({
   const iconSize = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5';
 
   return (
-    <div className="inline-flex items-center gap-0 bg-gray-100 dark:bg-gray-800/90 border border-gray-200/80 dark:border-gray-700/60 rounded-lg overflow-hidden">
+    <div className="inline-flex items-center gap-0 bg-gray-200/80 dark:bg-gray-800/90 border border-gray-300/70 dark:border-gray-700/60 rounded-lg overflow-hidden shadow-xs">
       {/* Like/Dislike Group */}
       <div className="inline-flex items-center">
         <Button
@@ -59,7 +59,7 @@ export function CommentReactionButtons({
           onClick={() => handle('like')}
           className={cn(
             sizeClass,
-            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-300/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
           )}
         >
           <ThumbsUp
@@ -84,7 +84,7 @@ export function CommentReactionButtons({
           onClick={() => handle('dislike')}
           className={cn(
             sizeClass,
-            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-300/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
           )}
         >
           <ThumbsDown
@@ -111,7 +111,7 @@ export function CommentReactionButtons({
               onClick={onReply}
               className={cn(
                 sizeClass,
-                'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
+                'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-300/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
               )}
               aria-label={replyLabel}
             >

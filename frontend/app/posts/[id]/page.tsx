@@ -159,12 +159,12 @@ export default function PostDetailPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">{post.title}</h1>
-                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-400">
                     <Link
                       href={`/developers/${post.author.id}`}
-                      className="flex items-center gap-2 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                      className="flex items-center gap-3 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                     >
-                      <Avatar className="h-8 w-8 bg-gradient-to-br from-brand-500 to-brand-600 text-white ring-2 ring-brand-500/20">
+                      <Avatar className="h-8 w-8 bg-gradient-to-br from-brand-500 to-brand-600 text-white ring-2 ring-brand-500/20 shrink-0">
                         {post.author.profilePicture ? (
                           <AvatarImage src={`${API_URL}${post.author.profilePicture}`} alt={post.author.name} className="object-cover" />
                         ) : (

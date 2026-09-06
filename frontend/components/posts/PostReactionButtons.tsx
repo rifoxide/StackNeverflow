@@ -130,7 +130,7 @@ export function PostReactionButtons({
   const iconSize = size === 'sm' ? 'h-[18px] w-[18px]' : 'h-5 w-5';
 
   return (
-    <div className="inline-flex items-center gap-0 bg-gray-100 dark:bg-gray-800/90 border border-gray-200/80 dark:border-gray-700/60 rounded-lg overflow-hidden w-fit">
+    <div className="inline-flex items-center gap-0 bg-gray-200/80 dark:bg-gray-800/90 border border-gray-300/70 dark:border-gray-700/60 rounded-lg overflow-hidden w-fit shadow-xs">
       {/* Like/Dislike Group */}
       <div className="inline-flex items-center">
         <Button
@@ -142,7 +142,7 @@ export function PostReactionButtons({
           onClick={() => handleToggle('like')}
           className={cn(
             sizeClass,
-            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-300/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
           )}
         >
           <ThumbsUp
@@ -167,7 +167,7 @@ export function PostReactionButtons({
           onClick={() => handleToggle('dislike')}
           className={cn(
             sizeClass,
-            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-300/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
           )}
         >
           <ThumbsDown
@@ -195,7 +195,7 @@ export function PostReactionButtons({
           onClick={onCommentClick}
           className={cn(
             sizeClass,
-            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-300/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
           )}
         >
           <MessageSquare className={cn(iconSize, 'text-gray-500 dark:text-gray-400')} />
