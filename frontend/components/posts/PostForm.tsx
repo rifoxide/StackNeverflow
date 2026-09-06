@@ -84,7 +84,7 @@ export function PostForm({
                 id="title"
                 name="title"
                 type="text"
-                placeholder="How do I implement JWT authentication in NestJS?"
+                placeholder="Title of the post"
                 value={title}
                 onChange={onTitleChange}
                 required
@@ -103,7 +103,7 @@ export function PostForm({
               <MarkdownEditor
                 value={body}
                 onChange={onBodyChange}
-                placeholder="I am trying to implement JWT authentication in my NestJS application but I'm getting errors when trying to validate tokens..."
+                placeholder="Body of the post (Markdown supported)"
                 disabled={isSubmitting}
               />
               <p className="text-xs text-gray-600 dark:text-gray-400">

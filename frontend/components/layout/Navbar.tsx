@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@heroui/react/button';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownPopover } from '@heroui/react/dropdown';
 import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
-import { Home, Bell, User, Moon, Sun, LogOut, Plus } from 'lucide-react';
+import { Home, Bell, User, Moon, Sun, LogOut, Plus, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Logo } from '@/components/Logo';
@@ -94,15 +94,24 @@ export function Navbar() {
       return (
         <Dropdown>
           <DropdownTrigger className="outline-none cursor-pointer">
-            <Avatar className="h-9 w-9 ring-2 ring-brand-500/20 hover:ring-brand-500/40 transition-all bg-gradient-to-br from-brand-500 to-brand-600 text-white">
-              {user.profilePicture ? (
-                <AvatarImage src={`${API_URL}${user.profilePicture}`} alt={user.name} className="object-cover" />
-              ) : (
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              )}
-            </Avatar>
+            <button
+              type="button"
+              className="flex items-center gap-2 py-1 px-1.5 sm:px-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all text-left group"
+            >
+              <Avatar className="h-8 w-8 sm:h-9 sm:w-9 ring-2 ring-brand-500/20 group-hover:ring-brand-500/40 transition-all bg-gradient-to-br from-brand-500 to-brand-600 text-white shrink-0">
+                {user.profilePicture ? (
+                  <AvatarImage src={`${API_URL}${user.profilePicture}`} alt={user.name} className="object-cover" />
+                ) : (
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <span className="font-medium text-sm text-gray-800 dark:text-gray-200 group-hover:text-brand-600 dark:group-hover:text-brand-400 max-w-[100px] sm:max-w-[140px] truncate">
+                {user.name}
+              </span>
+              <ChevronDown className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 hidden sm:block shrink-0" />
+            </button>
           </DropdownTrigger>
           <DropdownPopover>
             <DropdownMenu>

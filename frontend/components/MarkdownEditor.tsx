@@ -40,11 +40,11 @@ export function MarkdownEditor({
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4 h-[500px]">
-      {/* Editor - Left Side */}
-      <div className="flex flex-col">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-auto md:h-[500px]">
+      {/* Editor - Top on Mobile / Left on Desktop */}
+      <div className="flex flex-col h-[280px] sm:h-[320px] md:h-full">
         <div className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Editor</div>
-        <div className="textarea-glass flex-1 flex rounded-xl overflow-hidden shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-brand-500/20 focus-within:border-brand-500/60">
+        <div className="textarea-glass flex-1 flex rounded-xl overflow-hidden shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-brand-500/20 focus-within:border-brand-500/60 min-h-0">
           {/* Line Numbers */}
           <div
             ref={lineNumbersRef}
@@ -71,10 +71,10 @@ export function MarkdownEditor({
         </div>
       </div>
 
-      {/* Preview - Right Side */}
-      <div className="flex flex-col">
+      {/* Preview - Bottom on Mobile / Right on Desktop */}
+      <div className="flex flex-col h-[280px] sm:h-[320px] md:h-full">
         <div className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Preview</div>
-        <div className="textarea-glass flex-1 overflow-y-auto rounded-xl p-4 shadow-xs">
+        <div className="textarea-glass flex-1 overflow-y-auto rounded-xl p-4 shadow-xs min-h-0">
           {value ? (
             <div className="prose prose-sm dark:prose-invert max-w-none">
               <ReactMarkdown
