@@ -6,14 +6,14 @@ export class AddProfilePictureToUsers1725632228180 implements MigrationInterface
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       ALTER TABLE "users"
-      ADD COLUMN "profilePicture" character varying(500)
+      ADD COLUMN IF NOT EXISTS "profilePicture" character varying(500)
     `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       ALTER TABLE "users"
-      DROP COLUMN "profilePicture"
+      DROP COLUMN IF EXISTS "profilePicture"
     `);
   }
 }

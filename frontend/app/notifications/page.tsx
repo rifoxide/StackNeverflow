@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -8,7 +8,7 @@ import { Card, CardContent } from '@heroui/react/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
 import { Button } from '@heroui/react/button';
 import { Skeleton } from '@heroui/react/skeleton';
-import { Bell, ThumbsUp, ThumbsDown, MessageSquare, User, Check, Trash2 } from 'lucide-react';
+import { Bell, ThumbsUp, MessageSquare, User, Check, Trash2 } from 'lucide-react';
 import { notificationsApi } from '@/lib/api';
 import type { Notification } from '@/lib/types/notifications';
 import { formatRelativeTime } from '@/lib/comments';
@@ -148,16 +148,7 @@ export default function NotificationsPage() {
   const [error, setError] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/auth/login');
-      return;
-    }
-
-    fetchNotifications();
-  }, [isAuthenticated, router]);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await notificationsApi.getAll(1, 50);
@@ -169,7 +160,18 @@ export default function NotificationsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/auth/login');
+      return;
+    }
+
+    // Data fetching in an effect is intentional: authentication is a browser-side concern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchNotifications();
+  }, [fetchNotifications, isAuthenticated, router]);
 
   const handleMarkAsRead = async (id: string) => {
     try {
@@ -254,7 +256,7 @@ export default function NotificationsPage() {
               No notifications yet
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              When you get notifications, they'll show up here.
+              When you get notifications, they&apos;ll show up here.
             </p>
           </CardContent>
         ) : (

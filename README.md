@@ -16,6 +16,10 @@
 - [AI_USAGE.md](AI_USAGE.md) — Comprehensive report on AI tools, agentic workflows, prompt logs, code reviews, and bug fixes.
 - [AGENTS.md](AGENTS.md) — AI agent system context, execution rules, and coding standards.
 
+## Demo
+
+Watch the product walkthrough: [StackNeverflow demo](docs/media/stackneverflow-demo.mp4).
+
 ## Features
 
 ### Core Functionality
@@ -56,9 +60,10 @@
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- PostgreSQL 14+
-- npm or yarn
+- Node.js 20+ (Node.js 26 is also supported)
+- npm 10+
+- Docker Engine and Docker Compose (recommended), or PostgreSQL 14+
+- Git
 
 ### Installation
 
@@ -68,84 +73,80 @@
    cd StackNeverflow
    ```
 
-2. **Install dependencies**
+2. **Install dependencies for both applications**
    ```bash
-   npm install
+   npm run install:all
    ```
+
+   You can also install them separately with `npm install` in `backend/` and `frontend/`.
 
 3. **Set up environment variables**
-   
-   Create `.env` files in both `backend/` and `frontend/` directories:
 
-   **backend/.env**
-   ```env
-   DATABASE_URL=postgresql://user:password@localhost:5432/stackneverflow
-   JWT_ACCESS_SECRET=your-access-secret-min-32-chars
-   JWT_REFRESH_SECRET=your-refresh-secret-min-32-chars
-   JWT_ACCESS_EXPIRATION=15m
-   JWT_REFRESH_EXPIRATION=7d
-   NODE_ENV=development
-   PORT=3001
+   Copy the tracked examples and replace the development secrets if needed:
+   ```bash
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env.local
    ```
 
-   **frontend/.env.local**
+   `backend/.env` must contain:
+   ```env
+   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/stackneverflow
+   JWT_ACCESS_SECRET=change-me-access-secret-min-32-chars
+   JWT_REFRESH_SECRET=change-me-refresh-secret-min-32-chars
+   JWT_ACCESS_EXPIRATION=900
+   JWT_REFRESH_EXPIRATION=604800
+   BACKEND_PORT=3001
+   FRONTEND_URL=http://localhost:3000
+   ```
+
+   `frontend/.env.local` needs:
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:3001
    ```
 
-4. **Set up the database**
+   Expiration values are expressed in seconds. Use unique secrets of at least 32 characters outside local development. Environment files are ignored by Git.
 
-   **Option A: Using Docker (Recommended)**
+4. **Start PostgreSQL and initialize the schema**
+
+   **Option A: Docker (recommended)**
    ```bash
-   # Start PostgreSQL in Docker
-   docker-compose up -d
-
-   # Wait for database to be ready (health check will confirm)
-   docker-compose ps
-
-   # Run migrations
+   docker compose up -d
+   docker compose ps                         # postgres should be healthy
    cd backend
    npm run migration:run
-
-   # Seed with sample data (optional but recommended)
-   npm run seed
+   npm run seed                               # optional demo data
+   cd ..
    ```
 
-   **Option B: Using existing PostgreSQL installation**
+   **Option B: Existing PostgreSQL**
    ```bash
-   # Create the database
    createdb stackneverflow
-
-   # Run migrations
    cd backend
    npm run migration:run
-
-   # Seed with sample data (optional but recommended)
-   npm run seed
+   npm run seed                               # optional demo data
+   cd ..
    ```
 
-   > **Note**: If using Docker, update your `backend/.env` to match the Docker credentials:
-   > `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/stackneverflow`
+   The Docker Compose database uses `postgres/postgres` and publishes port `5432`. If port `5432` is already in use, stop the other PostgreSQL service or change the host-side port in `docker-compose.yml` and `DATABASE_URL`.
 
 5. **Start the development servers**
 
-   Open two terminal windows:
-
-   **Terminal 1 - Backend**
+   Start both applications from the repository root:
    ```bash
-   cd backend
-   npm run start:dev
-   ```
-
-   **Terminal 2 - Frontend**
-   ```bash
-   cd frontend
    npm run dev
    ```
 
-6. **Open the app**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000)
+   Or use separate terminals:
+   ```bash
+   cd backend && npm run start:dev
+   cd frontend && npm run dev
+   ```
+
+6. **Open the app and API documentation**
+
+   - Web app: [http://localhost:3000](http://localhost:3000)
+   - API health check: [http://localhost:3001](http://localhost:3001)
+   - Swagger/OpenAPI: [http://localhost:3001/api/docs](http://localhost:3001/api/docs)
 
 ### Test Accounts
 
@@ -256,31 +257,56 @@ cd backend
 npm test              # Run all tests
 npm run test:watch    # Watch mode
 npm run test:cov      # With coverage
+npm run build         # Compile the NestJS application
+npm run lint          # ESLint (currently reports existing warnings)
 ```
 
-**Frontend build verification**:
+**Frontend verification**:
 ```bash
 cd frontend
-npm run build         # TypeScript + Next.js build check
+npm run build         # TypeScript + Next.js production build
+npm run lint          # ESLint
 ```
+
+The production build is currently clean. Frontend lint still reports existing strict React Compiler and explicit-`any` findings in several older components; these do not prevent `npm run dev` or `npm run build`.
+
+**Manual smoke check** (with the database and servers running):
+```bash
+curl http://localhost:3001/
+curl http://localhost:3001/posts
+curl -I http://localhost:3000
+```
+
+The API root returns `{ "success": true, "data": { "status": "ok" } }`; `/api` is not the Swagger route—the interactive documentation is at `/api/docs`.
 
 ### Database Management
 
+Run these commands from `backend/`:
 ```bash
-cd backend
-
 # Generate a new migration after entity changes
 npm run migration:generate -- src/database/migrations/MigrationName
 
-# Run pending migrations
+# Run pending migrations (builds first, then uses dist/database/data-source.js)
 npm run migration:run
 
-# Revert last migration
+# Revert the last migration
 npm run migration:revert
 
-# Reset database and reseed
+# Reset the development database and reseed it
 npm run seed:reset
 ```
+
+Migration commands intentionally build the backend before invoking the TypeORM CLI. This avoids the ESM/ts-node decorator metadata issue that can occur when TypeORM imports TypeScript entities directly. The seed script is destructive: it truncates all application tables before inserting deterministic demo data, so do not run it against a production database.
+
+### Troubleshooting
+
+- **`ECONNREFUSED` or database connection errors:** run `docker compose up -d`, wait for `docker compose ps` to show `healthy`, and verify `DATABASE_URL` points to port `5432`.
+- **Migration says a column already exists:** update to the current migrations and run `npm run migration:run`; the profile-picture and notification migrations are idempotent for databases that were partially initialized by an earlier development revision.
+- **Frontend cannot reach the API:** confirm the backend is listening on port `3001` and that `frontend/.env.local` contains `NEXT_PUBLIC_API_URL=http://localhost:3001`.
+- **Port already in use:** change `BACKEND_PORT`/`FRONTEND_URL` and the corresponding frontend API URL, or stop the process using ports `3000`/`3001`.
+- **Stale Next.js output:** stop the dev server and remove `frontend/.next/`, then run `npm run dev` again.
+- **Uploads:** avatar files are served from `/uploads/`; the backend creates `backend/uploads/avatars/` when an upload is made. The multipart upload limit is 5 MB.
+- **Swagger returns 404 at `/api`:** use `/api/docs`.
 
 ### Code Quality
 
@@ -291,9 +317,11 @@ Both frontend and backend use:
 - **TypeScript strict mode** for type safety
 
 Pre-commit hooks automatically:
-1. Format code with Prettier
-2. Lint and fix with ESLint
+1. Format staged backend files with Prettier
+2. Lint staged backend TypeScript with ESLint
 3. Run related backend tests
+
+Install hooks after a fresh clone with `npm install` at the repository root (the root `prepare` script runs Husky).
 
 ## Deployment
 

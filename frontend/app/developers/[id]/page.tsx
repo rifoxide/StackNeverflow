@@ -235,8 +235,9 @@ export default function DeveloperProfilePage() {
       try {
         const data = await developersApi.getById(developerId);
         setDeveloper(data);
-      } catch (err: any) {
-        if (err.response?.status === 404) {
+      } catch (err: unknown) {
+        const errorResponse = err as { response?: { status?: number } };
+        if (errorResponse.response?.status === 404) {
           setError('Developer not found');
         } else {
           setError('Failed to load profile. Please try again.');

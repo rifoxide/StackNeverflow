@@ -8,97 +8,104 @@ import {
 
 export class CreateNotificationsTable1788709813628 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Create enum type for notification types
+    // Create enum type for notification types if not exists
     await queryRunner.query(`
-            CREATE TYPE "notification_type_enum" AS ENUM (
-                'post_reaction',
-                'post_comment',
-                'comment_reaction',
-                'comment_reply'
-            )
-        `);
+      DO $$ BEGIN
+        CREATE TYPE "notification_type_enum" AS ENUM (
+          'post_reaction',
+          'post_comment',
+          'comment_reaction',
+          'comment_reply'
+        );
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
 
-    // Create notifications table
-    await queryRunner.createTable(
-      new Table({
-        name: 'notifications',
-        columns: [
-          {
-            name: 'id',
-            type: 'uuid',
-            isPrimary: true,
-            generationStrategy: 'uuid',
-            default: 'uuid_generate_v4()',
-          },
-          {
-            name: 'type',
-            type: 'notification_type_enum',
-          },
-          {
-            name: 'recipientId',
-            type: 'uuid',
-          },
-          {
-            name: 'actorId',
-            type: 'uuid',
-          },
-          {
-            name: 'targetId',
-            type: 'uuid',
-          },
-          {
-            name: 'commentId',
-            type: 'uuid',
-            isNullable: true,
-          },
-          {
-            name: 'message',
-            type: 'text',
-          },
-          {
-            name: 'isRead',
-            type: 'boolean',
-            default: false,
-          },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'CURRENT_TIMESTAMP',
-          },
-        ],
-      }),
-      true,
-    );
+    // Create notifications table if not exists
+    const hasNotificationsTable = await queryRunner.hasTable('notifications');
+    if (!hasNotificationsTable) {
+      await queryRunner.createTable(
+        new Table({
+          name: 'notifications',
+          columns: [
+            {
+              name: 'id',
+              type: 'uuid',
+              isPrimary: true,
+              generationStrategy: 'uuid',
+              default: 'uuid_generate_v4()',
+            },
+            {
+              name: 'type',
+              type: 'notification_type_enum',
+            },
+            {
+              name: 'recipientId',
+              type: 'uuid',
+            },
+            {
+              name: 'actorId',
+              type: 'uuid',
+            },
+            {
+              name: 'targetId',
+              type: 'uuid',
+            },
+            {
+              name: 'commentId',
+              type: 'uuid',
+              isNullable: true,
+            },
+            {
+              name: 'message',
+              type: 'text',
+            },
+            {
+              name: 'isRead',
+              type: 'boolean',
+              default: false,
+            },
+            {
+              name: 'createdAt',
+              type: 'timestamp',
+              default: 'CURRENT_TIMESTAMP',
+            },
+          ],
+        }),
+        true,
+      );
 
-    // Create index for efficient querying of user notifications
-    await queryRunner.createIndex(
-      'notifications',
-      new TableIndex({
-        name: 'IDX_notifications_recipient_read_created',
-        columnNames: ['recipientId', 'isRead', 'createdAt'],
-      }),
-    );
+      // Create index for efficient querying of user notifications
+      await queryRunner.createIndex(
+        'notifications',
+        new TableIndex({
+          name: 'IDX_notifications_recipient_read_created',
+          columnNames: ['recipientId', 'isRead', 'createdAt'],
+        }),
+      );
 
-    // Add foreign key constraints
-    await queryRunner.createForeignKey(
-      'notifications',
-      new TableForeignKey({
-        columnNames: ['recipientId'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'users',
-        onDelete: 'CASCADE',
-      }),
-    );
+      // Add foreign key constraints
+      await queryRunner.createForeignKey(
+        'notifications',
+        new TableForeignKey({
+          columnNames: ['recipientId'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'users',
+          onDelete: 'CASCADE',
+        }),
+      );
 
-    await queryRunner.createForeignKey(
-      'notifications',
-      new TableForeignKey({
-        columnNames: ['actorId'],
-        referencedColumnNames: ['id'],
-        referencedTableName: 'users',
-        onDelete: 'CASCADE',
-      }),
-    );
+      await queryRunner.createForeignKey(
+        'notifications',
+        new TableForeignKey({
+          columnNames: ['actorId'],
+          referencedColumnNames: ['id'],
+          referencedTableName: 'users',
+          onDelete: 'CASCADE',
+        }),
+      );
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
