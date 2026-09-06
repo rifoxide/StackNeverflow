@@ -8,13 +8,15 @@ import type { Post, ReactionType } from '@/lib/types';
 import { Button } from '@heroui/react/button';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Skeleton } from '@heroui/react/skeleton';
-import { Avatar, AvatarFallback } from '@heroui/react/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownPopover } from '@heroui/react/dropdown';
 import { ArrowLeft, User, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { CommentSection } from '@/components/comments/CommentSection';
 import { PostReactionButtons } from '@/components/posts/PostReactionButtons';
 import { useAuth } from '@/contexts/AuthContext';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 function PostSkeleton() {
   return (
@@ -163,12 +165,21 @@ export default function PostDetailPage() {
                       className="flex items-center gap-2 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                     >
                       <Avatar className="h-8 w-8 bg-gradient-to-br from-brand-500 to-brand-600 text-white ring-2 ring-brand-500/20">
-                        <AvatarFallback>
-                          <User className="h-4 w-4" />
-                        </AvatarFallback>
+                        {post.author.profilePicture ? (
+                          <AvatarImage src={`${API_URL}${post.author.profilePicture}`} alt={post.author.name} className="object-cover" />
+                        ) : (
+                          <AvatarFallback>
+                            <User className="h-4 w-4" />
+                          </AvatarFallback>
+                        )}
                       </Avatar>
                       <span className="font-medium text-gray-900 dark:text-gray-100">{post.author.name}</span>
                     </Link>
+                    {isOwnPost && (
+                      <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded bg-[#1877F2]/10 text-[#1877F2] dark:bg-[#2D88FF]/20 dark:text-[#2D88FF]">
+                        You
+                      </span>
+                    )}
                     <span>•</span>
                     <span>{formatDate(post.createdAt)}</span>
                     {post.updatedAt !== post.createdAt && (

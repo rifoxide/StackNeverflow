@@ -126,13 +126,13 @@ export function PostReactionButtons({
     }
   };
 
-  const sizeClass = size === 'sm' ? 'h-8 px-2 text-xs' : 'h-10 px-3 text-sm';
-  const iconSize = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
+  const sizeClass = size === 'sm' ? 'h-9 px-3 text-xs font-medium' : 'h-10 px-3.5 text-sm font-medium';
+  const iconSize = size === 'sm' ? 'h-[18px] w-[18px]' : 'h-5 w-5';
 
   return (
-    <div className="inline-flex items-center gap-0 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden p-1 w-fit">
+    <div className="inline-flex items-center gap-0 bg-gray-100 dark:bg-gray-800/90 border border-gray-200/80 dark:border-gray-700/60 rounded-lg overflow-hidden w-fit">
       {/* Like/Dislike Group */}
-      <div className="inline-flex items-center rounded-md overflow-hidden">
+      <div className="inline-flex items-center">
         <Button
           type="button"
           variant="secondary"
@@ -142,15 +142,15 @@ export function PostReactionButtons({
           onClick={() => handleToggle('like')}
           className={cn(
             sizeClass,
-            'gap-1.5 rounded-none border-0',
-            userReaction === 'like' &&
-              'bg-[#1877F2]/10 text-[#1877F2] dark:bg-[#2D88FF]/20 dark:text-[#2D88FF] hover:bg-[#1877F2]/20',
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
           )}
         >
           <ThumbsUp
             className={cn(
               iconSize,
-              userReaction === 'like' && 'fill-current',
+              userReaction === 'like'
+                ? 'text-[#1877F2] dark:text-[#2D88FF] fill-current'
+                : 'text-gray-500 dark:text-gray-400',
             )}
           />
           <span>{likesCount}</span>
@@ -167,15 +167,15 @@ export function PostReactionButtons({
           onClick={() => handleToggle('dislike')}
           className={cn(
             sizeClass,
-            'gap-1.5 rounded-none border-0',
-            userReaction === 'dislike' &&
-              'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 hover:bg-red-500/20',
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
           )}
         >
           <ThumbsDown
             className={cn(
               iconSize,
-              userReaction === 'dislike' && 'fill-current',
+              userReaction === 'dislike'
+                ? 'text-red-600 dark:text-red-400 fill-current'
+                : 'text-gray-500 dark:text-gray-400',
             )}
           />
           <span>{dislikesCount}</span>
@@ -183,19 +183,22 @@ export function PostReactionButtons({
       </div>
 
       {/* Separator */}
-      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-2" aria-hidden="true" role="separator" />
+      <div className="w-px h-4 bg-gray-300 dark:bg-gray-600" aria-hidden="true" role="separator" />
 
       {/* Comment Group */}
-      <div className="inline-flex items-center rounded-md overflow-hidden">
+      <div className="inline-flex items-center">
         <Button
           type="button"
           variant="secondary"
           size={size}
           aria-label="Comments"
           onClick={onCommentClick}
-          className={cn(sizeClass, 'gap-1.5 rounded-none border-0')}
+          className={cn(
+            sizeClass,
+            'gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-200/60 dark:hover:bg-gray-700/60 text-gray-700 dark:text-gray-300 transition-colors',
+          )}
         >
-          <MessageSquare className={iconSize} />
+          <MessageSquare className={cn(iconSize, 'text-gray-500 dark:text-gray-400')} />
           <span>{commentCount}</span>
         </Button>
       </div>

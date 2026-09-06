@@ -70,7 +70,7 @@ function NotificationItem({
   return (
     <div
       className={`flex items-start gap-3 p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
-        !notification.isRead ? 'bg-blue-50 dark:bg-blue-950/20' : ''
+        !notification.isRead ? 'bg-gray-100/70 dark:bg-gray-800/40' : ''
       }`}
     >
       <Link

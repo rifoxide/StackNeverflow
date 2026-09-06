@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import colors from "tailwindcss/colors";
 
 const config: Config = {
   content: [
@@ -10,6 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        gray: colors.zinc,
         brand: {
           50: '#eff6ff',
           100: '#dbeafe',

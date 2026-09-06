@@ -8,38 +8,46 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f3f4f6;
+  background: #f4f4f5;
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #111827;
+  background: #18181b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #d4d4d8;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #a1a1aa;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: #27272a;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+  background: #3f3f46;
 }
 
-/* Body background gradient */
+/* Body background */
 body {
-  background: linear-gradient(to bottom right, #fafafa 0%, #eff6ff 50%, #faf5ff 100%);
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(255, 94, 0, 0.025) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 0%, rgba(139, 92, 246, 0.025) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 0%, #f4f4f5 0%, #e4e4e7 100%);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
 .dark body {
-  background: #0b0e14;
+  background:
+    radial-gradient(ellipse 55% 35% at 15% -5%, rgba(255, 94, 0, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 35% at 85% -5%, rgba(139, 92, 246, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 40% at 50% 0%, #1e1e24 0%, #121216 50%, #09090b 100%);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
@@ -53,23 +61,23 @@ body {
 .prose h3,
 .prose h4 {
   font-weight: 600;
-  color: #111827;
+  color: #18181b;
 }
 
 .dark .prose h1,
 .dark .prose h2,
 .dark .prose h3,
 .dark .prose h4 {
-  color: #f3f4f6;
+  color: #f4f4f5;
 }
 
 .prose p {
-  color: #374151;
+  color: #3f3f46;
   line-height: 1.75;
 }
 
 .dark .prose p {
-  color: #d1d5db;
+  color: #d4d4d8;
 }
 
 .prose a {
@@ -90,7 +98,7 @@ body {
 }
 
 .prose code {
-  background: #f3f4f6;
+  background: #f4f4f5;
   color: #2563eb;
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
@@ -104,47 +112,47 @@ body {
 }
 
 .prose pre {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f4f4f5;
+  border: 1px solid #e4e4e7;
   border-radius: 0.5rem;
   padding: 1rem;
   overflow-x: auto;
 }
 
 .dark .prose pre {
-  background: #030712;
-  border-color: #1f2937;
+  background: #121214;
+  border-color: #27272a;
 }
 
 .prose pre code {
   background: transparent;
-  color: #1e293b;
+  color: #18181b;
   padding: 0;
 }
 
 .dark .prose pre code {
-  color: #f3f4f6;
+  color: #f4f4f5;
 }
 
 .prose blockquote {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #71717a;
   padding-left: 1rem;
   font-style: italic;
-  color: #4b5563;
+  color: #52525b;
 }
 
 .dark .prose blockquote {
-  color: #9ca3af;
+  color: #a1a1aa;
 }
 
 .prose ul,
 .prose ol {
-  color: #374151;
+  color: #3f3f46;
 }
 
 .dark .prose ul,
 .dark .prose ol {
-  color: #d1d5db;
+  color: #d4d4d8;
 }
 
 /* Focus styles */
@@ -170,10 +178,10 @@ textarea:focus-visible {
   animation: shimmer 2s infinite;
   background: linear-gradient(
     to right,
-    #f3f4f6 0%,
-    #e5e7eb 20%,
-    #f3f4f6 40%,
-    #f3f4f6 100%
+    #f4f4f5 0%,
+    #e4e4e7 20%,
+    #f4f4f5 40%,
+    #f4f4f5 100%
   );
   background-size: 1000px 100%;
 }
@@ -181,9 +189,9 @@ textarea:focus-visible {
 .dark .skeleton {
   background: linear-gradient(
     to right,
-    #1f2937 0%,
-    #374151 20%,
-    #1f2937 40%,
-    #1f2937 100%
+    #18181b 0%,
+    #27272a 20%,
+    #18181b 40%,
+    #18181b 100%
   );
 }

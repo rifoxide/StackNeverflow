@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { postsApi, reactionsApi } from '@/lib/api';
@@ -97,6 +97,15 @@ function PostCard({
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (el) {
+      setIsTruncated(el.scrollHeight > el.clientHeight + 1);
+    }
+  }, [post.body]);
 
   const isOwnPost = currentUserId && post.author.id === currentUserId;
 
@@ -113,9 +122,21 @@ function PostCard({
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // If user clicked an interactive element (link, button, dropdown, etc.), don't navigate to post detail
+    const target = e.target as HTMLElement;
+    if (target.closest('a, button, [role="button"], [role="menuitem"], input, textarea, select')) {
+      return;
+    }
+    router.push(`/posts/${post.id}`);
+  };
+
   return (
     <>
-      <Card className="hover:shadow-2xl hover:shadow-brand-500/5 transition-all duration-300 border-0 shadow-md bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:-translate-y-1">
+      <Card
+        onClick={handleCardClick}
+        className="cursor-pointer hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 transition-all duration-300 border-0 shadow-md bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:-translate-y-1"
+      >
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -135,6 +156,11 @@ function PostCard({
                   </Avatar>
                   <span className="font-medium text-gray-900 dark:text-gray-100">{post.author.name}</span>
                 </Link>
+                {isOwnPost && (
+                  <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded bg-[#1877F2]/10 text-[#1877F2] dark:bg-[#2D88FF]/20 dark:text-[#2D88FF]">
+                    You
+                  </span>
+                )}
                 <span>•</span>
                 <span>{formatRelativeTime(post.createdAt)}</span>
                 {post.updatedAt !== post.createdAt && (
@@ -187,9 +213,17 @@ function PostCard({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="prose prose-sm dark:prose-invert max-w-none line-clamp-3 mb-4">
+          <div ref={contentRef} className="prose prose-sm dark:prose-invert max-w-none line-clamp-3">
             <MarkdownViewer content={post.body} />
           </div>
+          {isTruncated && (
+            <div className="mt-2 mb-4">
+              <span className="text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300 transition-colors">
+                See more →
+              </span>
+            </div>
+          )}
+          {!isTruncated && <div className="mb-4" />}
           <PostReactionButtons
             postId={post.id}
             initialLikesCount={post.likesCount}

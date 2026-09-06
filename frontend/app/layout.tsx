@@ -32,7 +32,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <AuthProvider>
             <Navbar />
             <main className="flex-1 relative">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/20 via-transparent to-purple-100/20 dark:from-blue-500/5 dark:via-transparent dark:to-purple-500/5 pointer-events-none" />
               <div className="relative">{children}</div>
             </main>
           </AuthProvider>

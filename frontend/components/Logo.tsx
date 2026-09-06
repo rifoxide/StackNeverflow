@@ -1,27 +1,36 @@
+'use client';
+
+import { useId } from 'react';
+
 export function Logo({ className = "h-10 w-10" }: { className?: string }) {
+  const rawId = useId();
+  const cleanId = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
+  const stackGradId = `stack-grad-${cleanId}`;
+  const boxGradId = `box-grad-${cleanId}`;
+
   return (
     <svg className={className} viewBox="0 0 90 110" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         {/* Orange Gradient for Stack */}
-        <linearGradient id="stack-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={stackGradId} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FF9900" />
           <stop offset="100%" stopColor="#FF5500" />
         </linearGradient>
 
         {/* Box Gradient */}
-        <linearGradient id="box-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id={boxGradId} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#8A929A" />
           <stop offset="100%" stopColor="#545D66" />
         </linearGradient>
       </defs>
 
       {/* ICON GROUP */}
-      <g id="icon" transform="translate(10, 5)">
+      <g id={`icon-${cleanId}`}>
         {/* Broken Tray / Box */}
         {/* Left Wall */}
         <path
           d="M 10 35 L 10 75 L 30 75"
-          stroke="url(#box-grad)"
+          stroke={`url(#${boxGradId})`}
           strokeWidth="7"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -29,7 +38,7 @@ export function Logo({ className = "h-10 w-10" }: { className?: string }) {
         {/* Right Wall */}
         <path
           d="M 80 35 L 80 75 L 60 75"
-          stroke="url(#box-grad)"
+          stroke={`url(#${boxGradId})`}
           strokeWidth="7"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -53,17 +62,17 @@ export function Logo({ className = "h-10 w-10" }: { className?: string }) {
 
         {/* Top Stack Bars (Orderly) */}
         {/* Bar 1 (Top) */}
-        <rect x="23" y="15" width="44" height="7" rx="3.5" fill="url(#stack-grad)" />
+        <rect x="23" y="15" width="44" height="7" rx="3.5" fill={`url(#${stackGradId})`} />
         {/* Bar 2 (Slight Tilt) */}
         <rect
           x="23" y="27" width="44" height="7" rx="3.5"
-          fill="url(#stack-grad)"
+          fill={`url(#${stackGradId})`}
           transform="rotate(4 45 30)"
         />
         {/* Bar 3 (Tilted More) */}
         <rect
           x="23" y="40" width="44" height="7" rx="3.5"
-          fill="url(#stack-grad)"
+          fill={`url(#${stackGradId})`}
           transform="rotate(12 45 43)"
         />
 
@@ -72,7 +81,7 @@ export function Logo({ className = "h-10 w-10" }: { className?: string }) {
         <g className="falling-bar-1">
           <rect
             x="24" y="60" width="44" height="7" rx="3.5"
-            fill="url(#stack-grad)"
+            fill={`url(#${stackGradId})`}
             transform="rotate(-12 46 63)"
           />
         </g>
@@ -81,7 +90,7 @@ export function Logo({ className = "h-10 w-10" }: { className?: string }) {
         <g className="falling-bar-2">
           <rect
             x="35" y="82" width="44" height="7" rx="3.5"
-            fill="url(#stack-grad)"
+            fill={`url(#${stackGradId})`}
             transform="rotate(35 57 85)"
           />
         </g>

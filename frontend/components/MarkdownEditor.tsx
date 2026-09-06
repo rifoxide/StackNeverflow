@@ -90,7 +90,7 @@ export function MarkdownEditor({
                         customStyle={{
                           margin: 0,
                           borderRadius: '0.375rem',
-                          border: isDark ? '1px solid #1f2937' : '1px solid #e2e8f0',
+                          border: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
                         }}
                       >
                         {String(children).replace(/\n$/, '')}
