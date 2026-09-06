@@ -101,7 +101,7 @@ export function CommentForm({
         rows={rows}
         disabled={isSubmitting}
         aria-label={replyingToName ? `Reply to ${replyingToName}` : 'Write a comment'}
-        className="text-sm bg-gray-100 dark:bg-gray-800 w-full"
+        className="textarea-glass text-sm w-full rounded-xl transition-all duration-200"
       />
 
       <div className="flex items-center justify-between">

@@ -53,7 +53,7 @@ function ErrorState({ error }: { error: string }) {
           Failed to load profile
         </h3>
         <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
-        <Button onClick={() => router.push('/')} variant="secondary">
+        <Button onClick={() => router.push('/')} className="btn-glass text-gray-800 dark:text-gray-100 rounded-full px-5">
           Back to Feed
         </Button>
       </CardContent>
@@ -282,7 +282,10 @@ export default function DeveloperProfilePage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       <div className="mb-6">
-        <Button variant="tertiary" onClick={() => router.push('/')} className="mb-4">
+        <Button
+          onClick={() => router.push('/')}
+          className="btn-glass mb-4 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Feed
         </Button>

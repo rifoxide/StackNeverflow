@@ -49,7 +49,11 @@ export function PostForm({
   return (
     <>
       <div className="mb-6">
-        <Button variant="tertiary" onClick={onBack} className="mb-4" isDisabled={isSubmitting}>
+        <Button
+          onClick={onBack}
+          className="btn-glass mb-4 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400"
+          isDisabled={isSubmitting}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           {backLabel}
         </Button>

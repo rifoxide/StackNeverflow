@@ -44,11 +44,11 @@ function ErrorState({ error }: { error: string }) {
   const router = useRouter();
 
   return (
-    <Card className="text-center py-12 border-red-200 dark:border-red-800 bg-red-50/80 dark:bg-red-950/30 backdrop-blur-sm">
+    <Card className="text-center py-12 border-red-200 dark:border-red-800 bg-red-50/80 dark:bg-red-950/30">
       <CardContent>
         <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Failed to load post</h3>
         <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
-        <Button onClick={() => router.push('/')} variant="secondary" className="shadow-md">
+        <Button onClick={() => router.push('/')} className="btn-glass text-gray-800 dark:text-gray-100 rounded-full px-5">
           Back to Feed
         </Button>
       </CardContent>
@@ -141,7 +141,10 @@ export default function PostDetailPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-6">
-        <Button variant="tertiary" onClick={() => router.push('/')} className="mb-4 hover:text-brand-600 dark:hover:text-brand-400">
+        <Button
+          onClick={() => router.push('/')}
+          className="btn-glass mb-4 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Feed
         </Button>
@@ -154,7 +157,7 @@ export default function PostDetailPage() {
       ) : post ? (
         <div className="space-y-6">
           {/* Main Post Card */}
-          <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-0 shadow-lg">
+          <Card className="shadow-lg">
             <CardHeader>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">

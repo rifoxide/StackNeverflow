@@ -43,12 +43,12 @@ export function MarkdownEditor({
     <div className="grid grid-cols-2 gap-4 h-[500px]">
       {/* Editor - Left Side */}
       <div className="flex flex-col">
-        <div className="text-sm font-medium mb-2 text-muted-foreground">Editor</div>
-        <div className="flex-1 flex border rounded-md overflow-hidden bg-background">
+        <div className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Editor</div>
+        <div className="textarea-glass flex-1 flex rounded-xl overflow-hidden shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-brand-500/20 focus-within:border-brand-500/60">
           {/* Line Numbers */}
           <div
             ref={lineNumbersRef}
-            className="flex flex-col overflow-hidden bg-muted/30 text-muted-foreground text-right pr-3 pl-2 py-2 font-mono text-sm select-none border-r"
+            className="flex flex-col overflow-hidden bg-black/5 dark:bg-white/5 text-gray-400 dark:text-gray-500 text-right pr-3 pl-2 py-2 font-mono text-sm select-none border-r border-gray-200/50 dark:border-gray-700/50"
             style={{ lineHeight: '1.5rem' }}
           >
             {Array.from({ length: lineCount }, (_, i) => (
@@ -65,7 +65,7 @@ export function MarkdownEditor({
             onScroll={handleScroll}
             placeholder={placeholder}
             disabled={disabled}
-            className="flex-1 resize-none font-mono text-sm p-2 bg-transparent border-0 outline-none focus:ring-0"
+            className="flex-1 resize-none font-mono text-sm p-2.5 bg-transparent border-0 outline-none focus:ring-0 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
             style={{ lineHeight: '1.5rem' }}
           />
         </div>
@@ -73,8 +73,8 @@ export function MarkdownEditor({
 
       {/* Preview - Right Side */}
       <div className="flex flex-col">
-        <div className="text-sm font-medium mb-2 text-muted-foreground">Preview</div>
-        <div className="flex-1 overflow-y-auto border rounded-md p-4 bg-muted/30">
+        <div className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Preview</div>
+        <div className="textarea-glass flex-1 overflow-y-auto rounded-xl p-4 shadow-xs">
           {value ? (
             <div className="prose prose-sm dark:prose-invert max-w-none">
               <ReactMarkdown
@@ -107,7 +107,7 @@ export function MarkdownEditor({
               </ReactMarkdown>
             </div>
           ) : (
-            <p className="text-muted-foreground italic">Nothing to preview yet</p>
+            <p className="text-gray-400 dark:text-gray-500 italic">Nothing to preview yet</p>
           )}
         </div>
       </div>

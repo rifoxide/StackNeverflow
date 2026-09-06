@@ -167,7 +167,7 @@ export function CommentItem({
                   {/* Mask for last child to stop parent's vertical line */}
                   {isLastChild && (
                     <span
-                      className="absolute w-[3px] bg-white dark:bg-[#18181b]"
+                      className="comment-line-mask absolute w-[3px]"
                       style={{
                         left: -22,
                         top: CURVE_HEIGHT,

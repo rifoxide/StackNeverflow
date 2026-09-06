@@ -5,13 +5,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@heroui/react/button';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownPopover } from '@heroui/react/dropdown';
 import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
-import { TabsRoot, TabList, Tab } from '@heroui/react/tabs';
 import { Home, Bell, User, Moon, Sun, LogOut, Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Logo } from '@/components/Logo';
 import { notificationsApi } from '@/lib/api';
 import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -161,6 +162,12 @@ export function Navbar() {
     );
   };
 
+  const navTabs = [
+    { id: 'feed', label: 'Feed', icon: Home },
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-2xl backdrop-saturate-200 bg-white/60 dark:bg-black/60 border-b border-gray-200/40 dark:border-gray-800/40 shadow-sm">
       <div className="container mx-auto px-4">
@@ -181,37 +188,42 @@ export function Navbar() {
           {/* Desktop Navigation */}
           {isAuthenticated && (
             <nav className="flex items-center gap-3">
-              <TabsRoot
-                selectedKey={getActiveTab()}
-                onSelectionChange={handleTabChange}
-                variant="primary"
-              >
-                <TabList className="flex gap-1.5 bg-gray-100/50 dark:bg-gray-800/40 p-1.5 rounded-full backdrop-blur-md">
-                  <Tab id="feed" className="px-4 py-2 rounded-full data-[selected=true]:bg-white/80 dark:data-[selected=true]:bg-gray-700/80 data-[selected=true]:shadow-md transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                    <div className="flex items-center gap-2">
-                      <Home className="h-4 w-4" />
-                      <span className="font-medium">Feed</span>
-                    </div>
-                  </Tab>
-                  <Tab id="profile" className="px-4 py-2 rounded-full data-[selected=true]:bg-white/80 dark:data-[selected=true]:bg-gray-700/80 data-[selected=true]:shadow-md transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      <span className="font-medium">Profile</span>
-                    </div>
-                  </Tab>
-                  <Tab id="notifications" className="px-4 py-2 rounded-full data-[selected=true]:bg-white/80 dark:data-[selected=true]:bg-gray-700/80 data-[selected=true]:shadow-md transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                    <div className="flex items-center gap-2 relative">
-                      <Bell className="h-4 w-4" />
-                      <span className="font-medium">Notifications</span>
-                      {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-lg animate-pulse">
-                          {unreadCount > 9 ? '9+' : unreadCount}
-                        </span>
+              <div className="flex items-center gap-1 bg-gray-100/60 dark:bg-gray-800/50 p-1 rounded-full backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 shadow-inner">
+                {navTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isSelected = getActiveTab() === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => handleTabChange(tab.id)}
+                      className={cn(
+                        'relative px-4 py-1.5 rounded-full text-sm font-medium transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer',
+                        isSelected
+                          ? 'text-brand-600 dark:text-brand-400 font-semibold'
+                          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                       )}
-                    </div>
-                  </Tab>
-                </TabList>
-              </TabsRoot>
+                    >
+                      {isSelected && (
+                        <motion.div
+                          layoutId="desktop-navbar-tab-indicator"
+                          className="absolute inset-0 bg-white/95 dark:bg-gray-700/90 rounded-full shadow-md backdrop-blur-sm"
+                          transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                        />
+                      )}
+                      <div className="flex items-center gap-2 relative z-10">
+                        <Icon className="h-4 w-4" />
+                        <span>{tab.label}</span>
+                        {tab.id === 'notifications' && unreadCount > 0 && (
+                          <span className="h-4 min-w-4 px-1 flex items-center justify-center text-[10px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-sm animate-pulse">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
               <Button
                 size="sm"
                 onPress={() => router.push('/posts/new')}
@@ -262,37 +274,42 @@ export function Navbar() {
 
           {/* Mobile Navigation Buttons */}
           {isAuthenticated && (
-            <TabsRoot
-              selectedKey={getActiveTab()}
-              onSelectionChange={handleTabChange}
-              variant="primary"
-            >
-              <TabList className="flex gap-1.5 bg-gray-100/50 dark:bg-gray-800/40 p-1.5 rounded-full w-full backdrop-blur-md">
-                <Tab id="feed" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white/80 dark:data-[selected=true]:bg-gray-700/80 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <Home className="h-4 w-4" />
-                    <span className="text-sm font-medium">Feed</span>
-                  </div>
-                </Tab>
-                <Tab id="profile" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white/80 dark:data-[selected=true]:bg-gray-700/80 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <User className="h-4 w-4" />
-                    <span className="text-sm font-medium">Profile</span>
-                  </div>
-                </Tab>
-                <Tab id="notifications" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white/80 dark:data-[selected=true]:bg-gray-700/80 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                  <div className="flex items-center justify-center gap-1.5 relative">
-                    <Bell className="h-4 w-4" />
-                    <span className="text-sm font-medium">Notifications</span>
-                    {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-[9px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-lg animate-pulse">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
+            <div className="flex items-center gap-1 bg-gray-100/60 dark:bg-gray-800/50 p-1 rounded-full w-full backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 shadow-inner">
+              {navTabs.map((tab) => {
+                const Icon = tab.icon;
+                const isSelected = getActiveTab() === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => handleTabChange(tab.id)}
+                    className={cn(
+                      'relative flex-1 px-3 py-2 rounded-full text-sm font-medium transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer',
+                      isSelected
+                        ? 'text-brand-600 dark:text-brand-400 font-semibold'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                     )}
-                  </div>
-                </Tab>
-              </TabList>
-            </TabsRoot>
+                  >
+                    {isSelected && (
+                      <motion.div
+                        layoutId="mobile-navbar-tab-indicator"
+                        className="absolute inset-0 bg-white/95 dark:bg-gray-700/90 rounded-full shadow-md backdrop-blur-sm"
+                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                      />
+                    )}
+                    <div className="flex items-center justify-center gap-1.5 relative z-10">
+                      <Icon className="h-4 w-4" />
+                      <span className="text-sm">{tab.label}</span>
+                      {tab.id === 'notifications' && unreadCount > 0 && (
+                        <span className="h-4 min-w-4 px-1 flex items-center justify-center text-[9px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-sm animate-pulse">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>

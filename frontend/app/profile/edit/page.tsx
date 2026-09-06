@@ -227,9 +227,8 @@ export default function EditProfilePage() {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <div className="mb-6">
         <Button
-          variant="tertiary"
           onClick={() => router.push(`/developers/${user?.id}`)}
-          className="mb-4"
+          className="btn-glass mb-4 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Profile
@@ -464,7 +463,7 @@ export default function EditProfilePage() {
                             handleExperienceChange(index, 'description', e.target.value)
                           }
                           rows={3}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1877F2] dark:focus:ring-[#2D88FF]"
+                          className="textarea-glass w-full px-3.5 py-2.5 rounded-xl text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500/60 transition-all duration-200"
                         />
                       </div>
                     </div>

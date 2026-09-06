@@ -43,7 +43,7 @@ function EmptyState({ search }: { search: string }) {
   const router = useRouter();
 
   return (
-    <Card className="text-center py-12 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border-gray-200 dark:border-gray-800">
+    <Card className="text-center py-12">
       <CardContent>
         <MessageSquare className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
         <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
@@ -69,7 +69,7 @@ function EmptyState({ search }: { search: string }) {
 
 function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
   return (
-    <Card className="text-center py-12 border-red-200 dark:border-red-800 bg-red-50/80 dark:bg-red-950/30 backdrop-blur-sm">
+    <Card className="text-center py-12 border-red-200 dark:border-red-800 bg-red-50/80 dark:bg-red-950/30">
       <CardContent>
         <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">Failed to load posts</h3>
         <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
@@ -135,7 +135,7 @@ function PostCard({
     <>
       <Card
         onClick={handleCardClick}
-        className="cursor-pointer hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 transition-all duration-300 border-0 shadow-md bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:-translate-y-1"
+        className="cursor-pointer hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 transition-all duration-300 hover:-translate-y-1"
       >
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
