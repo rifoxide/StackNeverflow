@@ -217,4 +217,14 @@ export const developersApi = {
     api
       .put('/developers/me/experiences', dto)
       .then((res) => res.data),
+
+  uploadProfilePicture: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<User>('/developers/me/profile-picture', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }).then((res) => res.data);
+  },
 };

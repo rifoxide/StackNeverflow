@@ -8,10 +8,12 @@ import type { Developer, Post } from '@/lib/types';
 import { Button } from '@heroui/react/button';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Skeleton } from '@heroui/react/skeleton';
-import { Avatar, AvatarFallback } from '@heroui/react/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
 import { User, Briefcase, Code, Calendar, ArrowLeft, Edit } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatRelativeTime } from '@/lib/comments';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 function ProfileSkeleton() {
   return (
@@ -213,9 +215,13 @@ export default function DeveloperProfilePage() {
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="h-24 w-24 bg-[#1877F2] dark:bg-[#2D88FF] text-white mb-4">
-                    <AvatarFallback>
-                      <User className="h-12 w-12" />
-                    </AvatarFallback>
+                    {developer.profilePicture ? (
+                      <AvatarImage src={`${API_URL}${developer.profilePicture}`} alt={developer.name} />
+                    ) : (
+                      <AvatarFallback>
+                        <User className="h-12 w-12" />
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   <h1 className="text-2xl font-bold mb-1">{developer.name}</h1>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">

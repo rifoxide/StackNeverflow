@@ -105,4 +105,32 @@ export class DevelopersService {
       return [];
     });
   }
+
+  /**
+   * Update user's profile picture.
+   *
+   * @param userId - User ID
+   * @param profilePictureUrl - URL path to the uploaded image
+   * @returns Updated user
+   */
+  async updateProfilePicture(
+    userId: string,
+    profilePictureUrl: string,
+  ): Promise<User> {
+    await this.userRepository.update(userId, { profilePicture: profilePictureUrl });
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: {
+        skills: true,
+        experiences: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    return user;
+  }
 }

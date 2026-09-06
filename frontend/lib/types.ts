@@ -4,6 +4,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  profilePicture: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -60,6 +61,7 @@ export interface Developer {
   id: string;
   name: string;
   email: string;
+  profilePicture: string | null;
   createdAt: string;
   skills: Skill[];
   experiences: Experience[];

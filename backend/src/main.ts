@@ -7,6 +7,8 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import fastifyCookie from '@fastify/cookie';
+import fastifyStatic from '@fastify/static';
+import { join } from 'path';
 import { AppModule } from './app.module.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
@@ -22,6 +24,12 @@ async function bootstrap() {
 
   // Register fastify cookie plugin
   await app.register(fastifyCookie);
+
+  // Register static file serving for uploads
+  await app.register(fastifyStatic, {
+    root: join(process.cwd(), 'uploads'),
+    prefix: '/uploads/',
+  });
 
   app.enableCors({
     origin: configService.get('FRONTEND_URL'),

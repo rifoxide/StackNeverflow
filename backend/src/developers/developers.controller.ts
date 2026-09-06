@@ -2,17 +2,26 @@ import {
   Controller,
   Get,
   Put,
+  Post,
   Param,
   Body,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { DevelopersService } from './developers.service.js';
 import { UpdateSkillsDto } from './dto/update-skills.dto.js';
 import { UpdateExperiencesDto } from './dto/update-experiences.dto.js';
@@ -139,6 +148,82 @@ export class DevelopersController {
     return this.developersService.updateExperiences(
       user.id,
       updateExperiencesDto,
+    );
+  }
+
+  /**
+   * Upload profile picture.
+   * POST /developers/me/profile-picture
+   * Accepts multipart/form-data with 'file' field.
+   *
+   * @param user - Current authenticated user
+   * @param file - Uploaded image file
+   * @returns Updated user with new profile picture URL
+   */
+  @Post('me/profile-picture')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload profile picture' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Profile picture uploaded successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid file type or size',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/avatars',
+        filename: (_req, file, callback) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          const ext = extname(file.originalname);
+          callback(null, `avatar-${uniqueSuffix}${ext}`);
+        },
+      }),
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
+      fileFilter: (_req, file, callback) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+          return callback(
+            new BadRequestException('Only image files are allowed'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  async uploadProfilePicture(
+    @CurrentUser() user: User,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    const profilePictureUrl = `/uploads/avatars/${file.filename}`;
+    return this.developersService.updateProfilePicture(
+      user.id,
+      profilePictureUrl,
     );
   }
 }

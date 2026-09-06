@@ -8,9 +8,11 @@ import { Button } from '@heroui/react/button';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Input } from '@heroui/react/input';
 import { Skeleton } from '@heroui/react/skeleton';
-import { Avatar, AvatarFallback } from '@heroui/react/avatar';
-import { User, ArrowLeft, Plus, X, Save, Code, Briefcase } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
+import { User, ArrowLeft, Plus, X, Save, Code, Briefcase, Camera } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 function ProfileSkeleton() {
   return (
@@ -47,6 +49,10 @@ export default function EditProfilePage() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Profile picture state
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [isUploadingPicture, setIsUploadingPicture] = useState(false);
+
   // Skills state
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
@@ -66,6 +72,7 @@ export default function EditProfilePage() {
       try {
         const data = await developersApi.getMe();
         setDeveloper(data);
+        setProfilePicture(data.profilePicture);
         setSkills(data.skills.map((s) => s.name));
         setExperiences(
           data.experiences.map((exp) => ({
@@ -86,6 +93,37 @@ export default function EditProfilePage() {
 
     fetchProfile();
   }, [isAuthenticated, router]);
+
+  const handleProfilePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be smaller than 5MB');
+      return;
+    }
+
+    setIsUploadingPicture(true);
+    setError('');
+
+    try {
+      const updatedUser = await developersApi.uploadProfilePicture(file);
+      setProfilePicture(updatedUser.profilePicture);
+      setSuccessMessage('Profile picture updated!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to upload image. Please try again.');
+    } finally {
+      setIsUploadingPicture(false);
+    }
+  };
 
   const handleAddSkill = () => {
     const trimmed = newSkill.trim();
@@ -204,14 +242,37 @@ export default function EditProfilePage() {
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <Avatar className="h-16 w-16 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
-              <AvatarFallback>
-                <User className="h-8 w-8" />
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="h-16 w-16 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
+                {profilePicture ? (
+                  <AvatarImage src={`${API_URL}${profilePicture}`} alt={developer?.name} />
+                ) : (
+                  <AvatarFallback>
+                    <User className="h-8 w-8" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <label
+                htmlFor="profile-picture-upload"
+                className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full bg-[#1877F2] dark:bg-[#2D88FF] text-white flex items-center justify-center cursor-pointer hover:bg-[#1565D8] dark:hover:bg-[#1E7FFF] transition-colors shadow-md"
+              >
+                <Camera className="h-4 w-4" />
+                <input
+                  id="profile-picture-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePictureChange}
+                  className="sr-only"
+                  disabled={isUploadingPicture}
+                />
+              </label>
+            </div>
             <div>
               <h1 className="text-2xl font-bold">Edit Profile</h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{developer?.name}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {developer?.name}
+                {isUploadingPicture && ' • Uploading...'}
+              </p>
             </div>
           </div>
 

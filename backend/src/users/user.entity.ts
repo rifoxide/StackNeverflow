@@ -52,6 +52,10 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   refreshTokenHash: string | null;
 
+  @ApiProperty({ description: 'Profile picture URL', example: '/uploads/avatars/abc123.jpg', required: false })
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  profilePicture: string | null;
+
   @ApiProperty({ description: 'Account creation timestamp' })
   @CreateDateColumn()
   createdAt: Date;
