@@ -1,4 +1,8 @@
 <div align="center">
+  <video src="docs/media/stackneverflow-demo.mp4" controls width="800" aria-label="StackNeverflow product demo">
+    <a href="docs/media/stackneverflow-demo.mp4">Watch the StackNeverflow demo</a>
+  </video>
+
   <img src="frontend/public/logo.svg" alt="StackNeverflow Logo" width="150" height="150">
   
   # StackNeverflow
@@ -15,10 +19,6 @@
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Phased task breakdown and development checklist.
 - [AI_USAGE.md](AI_USAGE.md) — Comprehensive report on AI tools, agentic workflows, prompt logs, code reviews, and bug fixes.
 - [AGENTS.md](AGENTS.md) — AI agent system context, execution rules, and coding standards.
-
-## Demo
-
-Watch the product walkthrough: [StackNeverflow demo](docs/media/stackneverflow-demo.mp4).
 
 ## Features
 
