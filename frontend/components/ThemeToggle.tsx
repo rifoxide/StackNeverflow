@@ -16,9 +16,12 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="tertiary" size="sm" isIconOnly isDisabled>
+      <span
+        className="inline-flex items-center justify-center h-9 w-9"
+        suppressHydrationWarning
+      >
         <Sun className="h-5 w-5" />
-      </Button>
+      </span>
     );
   }
 

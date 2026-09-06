@@ -3,17 +3,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { postsApi } from '@/lib/api';
-import type { Post } from '@/lib/types';
+import { postsApi, reactionsApi } from '@/lib/api';
+import type { Post, ReactionType } from '@/lib/types';
 import { Button } from '@heroui/react/button';
 import { Input } from '@heroui/react/input';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Skeleton } from '@heroui/react/skeleton';
 import { Avatar, AvatarFallback } from '@heroui/react/avatar';
-import { ThumbsUp, ThumbsDown, MessageSquare, Search, User } from 'lucide-react';
+import { MessageSquare, Search, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { formatRelativeTime } from '@/lib/comments';
+import { PostReactionButtons } from '@/components/posts/PostReactionButtons';
 
 function PostSkeleton() {
   return (
@@ -77,7 +78,15 @@ function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) 
   );
 }
 
-function PostCard({ post }: { post: Post }) {
+function PostCard({
+  post,
+  userReaction,
+  onUpdate,
+}: {
+  post: Post;
+  userReaction: ReactionType | null;
+  onUpdate: (postId: string, newCounts: { likesCount: number; dislikesCount: number }) => void;
+}) {
   return (
     <Card className="hover:shadow-lg transition-all border-0 shadow-sm">
       <CardHeader>
@@ -106,16 +115,16 @@ function PostCard({ post }: { post: Post }) {
         <div className="prose prose-sm dark:prose-invert max-w-none line-clamp-3 mb-4">
           <MarkdownViewer content={post.body} />
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-          <div className="flex items-center gap-1">
-            <ThumbsUp className="h-4 w-4" />
-            <span>{post.likesCount}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <ThumbsDown className="h-4 w-4" />
-            <span>{post.dislikesCount}</span>
-          </div>
-          <div className="flex items-center gap-1">
+        <div className="flex items-center gap-4">
+          <PostReactionButtons
+            postId={post.id}
+            initialLikesCount={post.likesCount}
+            initialDislikesCount={post.dislikesCount}
+            initialUserReaction={userReaction}
+            size="sm"
+            onReactionChange={(newCounts) => onUpdate(post.id, newCounts)}
+          />
+          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
             <MessageSquare className="h-4 w-4" />
             <span>{post.commentCount}</span>
           </div>
@@ -135,6 +144,7 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [userReactions, setUserReactions] = useState<Record<string, ReactionType | null>>({});
 
   const fetchPosts = useCallback(
     async (currentPage: number, searchQuery: string) => {
@@ -148,13 +158,26 @@ export default function Home() {
         });
         setPosts(response.data);
         setTotalPages(response.meta.totalPages);
+
+        // Batch fetch user reactions for all posts
+        if (isAuthenticated && response.data.length > 0) {
+          try {
+            const postIds = response.data.map((post) => post.id);
+            const reactions = await reactionsApi.getMineBatch('post', postIds);
+            setUserReactions(reactions);
+          } catch (err) {
+            console.error('Failed to fetch user reactions:', err);
+          }
+        } else {
+          setUserReactions({});
+        }
       } catch (err) {
         setError('Failed to load posts. Please try again.');
       } finally {
         setIsLoading(false);
       }
     },
-    []
+    [isAuthenticated]
   );
 
   useEffect(() => {
@@ -175,6 +198,14 @@ export default function Home() {
 
   const handleRetry = () => {
     fetchPosts(page, search);
+  };
+
+  const handlePostUpdate = (postId: string, newCounts: { likesCount: number; dislikesCount: number }) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId ? { ...post, ...newCounts } : post
+      )
+    );
   };
 
   return (
@@ -226,7 +257,12 @@ export default function Home() {
         ) : (
           <>
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard
+                key={post.id}
+                post={post}
+                userReaction={userReactions[post.id] ?? null}
+                onUpdate={handlePostUpdate}
+              />
             ))}
 
             {/* Pagination */}

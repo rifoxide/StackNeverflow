@@ -1,17 +1,2 @@
 @import "tailwindcss";
-@import "@heroui/styles/css";
-
-body {
-  background: #F2F4F7;
-  color: #050505;
-}
-
-.dark body {
-  background: #1C1C1D;
-  color: #E4E6EB;
-}
-
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import "@heroui/styles";

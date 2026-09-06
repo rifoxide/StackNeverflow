@@ -8,6 +8,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Comment } from './comment.entity.js';
 import { Post } from '../posts/post.entity.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
+import { PostsService } from '../posts/posts.service.js';
 
 /**
  * Service for managing comments and replies.
@@ -21,6 +22,7 @@ export class CommentsService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
     private readonly dataSource: DataSource,
+    private readonly postsService: PostsService,
   ) {}
 
   /**
@@ -80,6 +82,12 @@ export class CommentsService {
 
       // Increment denormalized post comment count
       await manager.increment(Post, { id: postId }, 'commentCount', 1);
+
+      // Recalculate rank score after incrementing comment count
+      // Must happen outside the transaction to avoid deadlock
+      setImmediate(() => {
+        void this.postsService.recalculateRankScore(postId);
+      });
 
       // Return with author loaded so the response includes name
       return manager.findOne(Comment, {

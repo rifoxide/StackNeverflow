@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service.js';
 import { UsersService } from '../users/users.service.js';
 import { User } from '../users/user.entity.js';
@@ -12,6 +14,14 @@ describe('AuthService', () => {
     findByEmail: vi.fn(),
   };
 
+  const mockJwtService = {
+    sign: vi.fn(),
+  };
+
+  const mockConfigService = {
+    get: vi.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -19,6 +29,14 @@ describe('AuthService', () => {
         {
           provide: UsersService,
           useValue: mockUsersService,
+        },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();

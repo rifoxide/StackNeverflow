@@ -9,6 +9,7 @@ import { Reaction, ReactionTargetType } from './reaction.entity.js';
 import { Post } from '../posts/post.entity.js';
 import { Comment } from '../comments/comment.entity.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
+import { PostsService } from '../posts/posts.service.js';
 
 /**
  * Result of toggling a reaction.
@@ -41,6 +42,7 @@ export class ReactionsService {
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
     private readonly dataSource: DataSource,
+    private readonly postsService: PostsService,
   ) {
     // Repositories are reserved for non-transactional reads. Mutating
     // paths always go through the dataSource transaction so writes stay
@@ -129,6 +131,11 @@ export class ReactionsService {
         await manager.update(Post, post.id, {
           likesCount: likeCount,
           dislikesCount: dislikeCount,
+        });
+        // Recalculate rank score after updating reaction counts on post
+        // Must happen outside the transaction to avoid deadlock
+        setImmediate(() => {
+          void this.postsService.recalculateRankScore(post.id);
         });
       } else if (comment) {
         await manager.update(Comment, comment!.id, {

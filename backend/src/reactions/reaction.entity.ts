@@ -6,6 +6,7 @@ import {
   Index,
   Unique,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Target types for polymorphic reactions.
@@ -31,21 +32,27 @@ export type ReactionType = 'like' | 'dislike';
 @Unique('UQ_reactions_user_target', ['userId', 'targetType', 'targetId'])
 @Index('IDX_reactions_target', ['targetType', 'targetId'])
 export class Reaction {
+  @ApiProperty({ description: 'Reaction unique identifier' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty({ description: 'User ID who reacted' })
   @Column({ type: 'uuid' })
   userId: string;
 
+  @ApiProperty({ description: 'Target type (post or comment)', enum: ['post', 'comment'] })
   @Column({ type: 'varchar', length: 20 })
   targetType: ReactionTargetType;
 
+  @ApiProperty({ description: 'Target entity ID (post or comment ID)' })
   @Column({ type: 'uuid' })
   targetId: string;
 
+  @ApiProperty({ description: 'Reaction type', enum: ['like', 'dislike'] })
   @Column({ type: 'varchar', length: 20 })
   type: ReactionType;
 
+  @ApiProperty({ description: 'Reaction creation timestamp' })
   @CreateDateColumn()
   createdAt: Date;
 }

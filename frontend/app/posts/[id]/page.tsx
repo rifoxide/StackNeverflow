@@ -3,15 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { postsApi } from '@/lib/api';
-import type { Post } from '@/lib/types';
+import { postsApi, reactionsApi } from '@/lib/api';
+import type { Post, ReactionType } from '@/lib/types';
 import { Button } from '@heroui/react/button';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Skeleton } from '@heroui/react/skeleton';
 import { Avatar, AvatarFallback } from '@heroui/react/avatar';
-import { ThumbsUp, ThumbsDown, MessageSquare, ArrowLeft, User } from 'lucide-react';
+import { MessageSquare, ArrowLeft, User } from 'lucide-react';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { CommentSection } from '@/components/comments/CommentSection';
+import { PostReactionButtons } from '@/components/posts/PostReactionButtons';
+import { useAuth } from '@/contexts/AuthContext';
 
 function PostSkeleton() {
   return (
@@ -54,10 +56,13 @@ function ErrorState({ error }: { error: string }) {
 export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const postId = params.id as string;
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
+  const [isLoadingReaction, setIsLoadingReaction] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -81,6 +86,25 @@ export default function PostDetailPage() {
       fetchPost();
     }
   }, [postId]);
+
+  // Fetch user's reaction if authenticated
+  useEffect(() => {
+    const fetchUserReaction = async () => {
+      if (!isAuthenticated || !postId) return;
+
+      setIsLoadingReaction(true);
+      try {
+        const reaction = await reactionsApi.getMine('post', postId);
+        setUserReaction(reaction);
+      } catch (err) {
+        console.error('Failed to fetch user reaction:', err);
+      } finally {
+        setIsLoadingReaction(false);
+      }
+    };
+
+    fetchUserReaction();
+  }, [postId, isAuthenticated]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -134,14 +158,20 @@ export default function PostDetailPage() {
 
               {/* Reaction Buttons */}
               <div className="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <Button variant="secondary" size="sm" className="gap-2">
-                  <ThumbsUp className="h-4 w-4" />
-                  <span>{post.likesCount}</span>
-                </Button>
-                <Button variant="secondary" size="sm" className="gap-2">
-                  <ThumbsDown className="h-4 w-4" />
-                  <span>{post.dislikesCount}</span>
-                </Button>
+                {!isLoadingReaction && (
+                  <PostReactionButtons
+                    postId={post.id}
+                    initialLikesCount={post.likesCount}
+                    initialDislikesCount={post.dislikesCount}
+                    initialUserReaction={userReaction}
+                    size="md"
+                    onReactionChange={(newCounts) => {
+                      setPost((p) =>
+                        p ? { ...p, ...newCounts } : p
+                      );
+                    }}
+                  />
+                )}
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 ml-auto">
                   <MessageSquare className="h-4 w-4" />
                   <span>{post.commentCount} comments</span>
