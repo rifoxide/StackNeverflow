@@ -99,12 +99,13 @@ body {
 }
 
 .dark .prose code {
-  background: #1f2937;
+  background: transparent;
   color: #60a5fa;
 }
 
 .prose pre {
-  background: #111827;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   padding: 1rem;
   overflow-x: auto;
@@ -112,12 +113,17 @@ body {
 
 .dark .prose pre {
   background: #030712;
+  border-color: #1f2937;
 }
 
 .prose pre code {
   background: transparent;
-  color: #f3f4f6;
+  color: #1e293b;
   padding: 0;
+}
+
+.dark .prose pre code {
+  color: #f3f4f6;
 }
 
 .prose blockquote {
