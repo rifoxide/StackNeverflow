@@ -16,7 +16,7 @@ import { useTheme } from 'next-themes';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isLoading } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
@@ -81,6 +81,14 @@ export function Navbar() {
   };
 
   const AuthSection = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center gap-2">
+          <div className="h-9 w-9 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+        </div>
+      );
+    }
+
     if (isAuthenticated && user) {
       return (
         <Dropdown>
