@@ -25,6 +25,13 @@ async function bootstrap() {
   // Register fastify cookie plugin
   await app.register(fastifyCookie);
 
+  // Register multipart for file uploads
+  await app.register(import('@fastify/multipart'), {
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB
+    },
+  });
+
   // Register static file serving for uploads
   await app.register(fastifyStatic, {
     root: join(process.cwd(), 'uploads'),
@@ -34,6 +41,8 @@ async function bootstrap() {
   app.enableCors({
     origin: configService.get('FRONTEND_URL'),
     credentials: true,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Global filters (order matters: most specific last)

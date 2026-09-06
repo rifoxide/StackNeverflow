@@ -245,7 +245,7 @@ export default function EditProfilePage() {
             <div className="relative">
               <Avatar className="h-16 w-16 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
                 {profilePicture ? (
-                  <AvatarImage src={`${API_URL}${profilePicture}`} alt={developer?.name} />
+                  <AvatarImage src={`${API_URL}${profilePicture}`} alt={developer?.name} className="object-cover" />
                 ) : (
                   <AvatarFallback>
                     <User className="h-8 w-8" />

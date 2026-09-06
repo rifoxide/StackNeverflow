@@ -85,9 +85,9 @@ export function Navbar() {
       return (
         <Dropdown>
           <DropdownTrigger className="outline-none cursor-pointer">
-            <Avatar className="h-8 w-8 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
+            <Avatar className="h-9 w-9 ring-2 ring-brand-500/20 hover:ring-brand-500/40 transition-all bg-gradient-to-br from-brand-500 to-brand-600 text-white">
               {user.profilePicture ? (
-                <AvatarImage src={`${API_URL}${user.profilePicture}`} alt={user.name} />
+                <AvatarImage src={`${API_URL}${user.profilePicture}`} alt={user.name} className="object-cover" />
               ) : (
                 <AvatarFallback>
                   <User className="h-4 w-4" />
@@ -135,7 +135,7 @@ export function Navbar() {
         </Button>
         <Button
           size="sm"
-          className="bg-[#1877F2] dark:bg-[#2D88FF] text-white"
+          className="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white shadow-md shadow-brand-500/30"
           onPress={() => router.push('/auth/register')}
         >
           Register
@@ -145,7 +145,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-md shadow-sm">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm">
       <div className="container mx-auto px-4">
         {/* Desktop Layout */}
         <div className="hidden md:flex h-14 items-center justify-between">
@@ -155,11 +155,11 @@ export function Navbar() {
             <div className="flex flex-col">
               <div className="font-bold text-xl leading-none">
                 <span className="text-gray-900 dark:text-gray-100">Stack</span>
-                <span className="text-[#1877F2] dark:text-[#2D88FF]">Never</span>
+                <span className="bg-gradient-to-r from-[#FF5E00] to-[#ffa600] bg-clip-text text-transparent">Never</span>
                 <span className="text-gray-900 dark:text-gray-100">flow</span>
               </div>
               <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium tracking-wide leading-tight">
-                Where your stack stays intact
+                
               </span>
             </div>
           </Link>
@@ -172,25 +172,25 @@ export function Navbar() {
                 onSelectionChange={handleTabChange}
                 variant="primary"
               >
-                <TabList className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-full">
-                  <Tab id="feed" className="px-4 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-sm transition-all">
+                <TabList className="flex gap-1.5 bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-full backdrop-blur-sm">
+                  <Tab id="feed" className="px-4 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg data-[selected=true]:shadow-brand-500/10 transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
                     <div className="flex items-center gap-2">
                       <Home className="h-4 w-4" />
-                      <span>Feed</span>
+                      <span className="font-medium">Feed</span>
                     </div>
                   </Tab>
-                  <Tab id="profile" className="px-4 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-sm transition-all">
+                  <Tab id="profile" className="px-4 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg data-[selected=true]:shadow-brand-500/10 transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
-                      <span>Profile</span>
+                      <span className="font-medium">Profile</span>
                     </div>
                   </Tab>
-                  <Tab id="notifications" className="px-4 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-sm transition-all">
+                  <Tab id="notifications" className="px-4 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg data-[selected=true]:shadow-brand-500/10 transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
                     <div className="flex items-center gap-2 relative">
                       <Bell className="h-4 w-4" />
-                      <span>Notifications</span>
+                      <span className="font-medium">Notifications</span>
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-bold bg-red-500 text-white rounded-full">
+                        <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-lg animate-pulse">
                           {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
                       )}
@@ -222,12 +222,9 @@ export function Navbar() {
               <div className="flex flex-col">
                 <div className="font-bold text-lg leading-none">
                   <span className="text-gray-900 dark:text-gray-100">Stack</span>
-                  <span className="text-[#1877F2] dark:text-[#2D88FF]">Never</span>
+                  <span className="bg-gradient-to-r from-[#FF5E00] to-[#ffa600] bg-clip-text text-transparent">Never</span>
                   <span className="text-gray-900 dark:text-gray-100">flow</span>
                 </div>
-                <span className="text-[9px] text-gray-600 dark:text-gray-400 font-medium tracking-wide leading-tight">
-                  Where your stack stays intact
-                </span>
               </div>
             </Link>
 
@@ -241,25 +238,25 @@ export function Navbar() {
               onSelectionChange={handleTabChange}
               variant="primary"
             >
-              <TabList className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-full w-full">
-                <Tab id="feed" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-sm transition-all">
+              <TabList className="flex gap-1.5 bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-full w-full backdrop-blur-sm">
+                <Tab id="feed" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
                   <div className="flex items-center justify-center gap-1.5">
                     <Home className="h-4 w-4" />
-                    <span className="text-sm">Feed</span>
+                    <span className="text-sm font-medium">Feed</span>
                   </div>
                 </Tab>
-                <Tab id="profile" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-sm transition-all">
+                <Tab id="profile" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
                   <div className="flex items-center justify-center gap-1.5">
                     <User className="h-4 w-4" />
-                    <span className="text-sm">Profile</span>
+                    <span className="text-sm font-medium">Profile</span>
                   </div>
                 </Tab>
-                <Tab id="notifications" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-sm transition-all">
+                <Tab id="notifications" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
                   <div className="flex items-center justify-center gap-1.5 relative">
                     <Bell className="h-4 w-4" />
-                    <span className="text-sm">Alerts</span>
+                    <span className="text-sm font-medium">Notifications</span>
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-[9px] font-bold bg-red-500 text-white rounded-full">
+                      <span className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-[9px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-lg animate-pulse">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
@@ -270,7 +267,7 @@ export function Navbar() {
           )}
 
           {!isAuthenticated && (
-            <Link href="/" className="flex items-center justify-center gap-2 text-sm font-medium bg-gray-100 dark:bg-gray-800 py-2 px-4 rounded-full hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors">
+            <Link href="/" className="flex items-center justify-center gap-2 text-sm font-medium bg-gray-100/80 dark:bg-gray-800/80 py-2 px-4 rounded-full text-gray-700 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-all">
               <Home className="h-4 w-4" />
               <span>Feed</span>
             </Link>

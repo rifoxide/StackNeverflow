@@ -145,10 +145,8 @@ function PostCard({ post, isOwnProfile, onDelete }: { post: Post; isOwnProfile: 
             </Link>
             {isOwnProfile && (
               <Dropdown>
-                <DropdownTrigger className="outline-none cursor-pointer">
-                  <Button variant="tertiary" size="sm" isIconOnly>
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
+                <DropdownTrigger className="outline-none cursor-pointer inline-flex items-center justify-center h-8 w-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                  <MoreVertical className="h-4 w-4" />
                 </DropdownTrigger>
                 <DropdownPopover>
                   <DropdownMenu>
@@ -304,7 +302,7 @@ export default function DeveloperProfilePage() {
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="h-24 w-24 bg-[#1877F2] dark:bg-[#2D88FF] text-white mb-4">
                     {developer.profilePicture ? (
-                      <AvatarImage src={`${API_URL}${developer.profilePicture}`} alt={developer.name} />
+                      <AvatarImage src={`${API_URL}${developer.profilePicture}`} alt={developer.name} className="object-cover" />
                     ) : (
                       <AvatarFallback>
                         <User className="h-12 w-12" />

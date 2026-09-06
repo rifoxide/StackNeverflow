@@ -60,7 +60,7 @@ export function CommentSection({
       <CardContent className="space-y-6">
         {/* Top-level form / login prompt */}
         {isAuthenticated ? (
-          <div className="pb-4 border-b border-gray-200 dark:border-gray-800">
+          <div className="pb-4">
             <CommentForm
               onSubmit={handleAddTopLevel}
               isSubmitting={isSubmitting}
@@ -69,13 +69,13 @@ export function CommentSection({
             />
           </div>
         ) : (
-          <div className="pb-4 border-b border-gray-200 dark:border-gray-800 text-center py-4">
+          <div className="pb-4 text-center py-4">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
               Log in to join the discussion.
             </p>
             <Link
               href={`/auth/login?redirect=/posts/${postId}`}
-              className="text-sm font-medium text-[#1877F2] dark:text-[#2D88FF] hover:underline"
+              className="text-sm font-medium text-brand-600 dark:text-brand-400 hover:underline"
             >
               Log in to comment →
             </Link>

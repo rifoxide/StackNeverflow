@@ -23,6 +23,7 @@ export interface Post {
   author: {
     id: string;
     name: string;
+    profilePicture: string | null;
   };
 }
 
@@ -38,6 +39,7 @@ export interface Comment {
   author: {
     id: string;
     name: string;
+    profilePicture: string | null;
   };
 }
 

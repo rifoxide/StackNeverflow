@@ -87,8 +87,8 @@ export function CommentList({
     userReactions[commentId] ?? null;
 
   return (
-    <div className="divide-y divide-gray-200 dark:divide-gray-800">
-      {topLevel.map((comment) => {
+    <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+      {topLevel.map((comment, i) => {
         const children = byParent.get(comment.id) ?? [];
         return (
           <CommentItem
@@ -103,9 +103,10 @@ export function CommentList({
             onSetReplyingTo={onSetReplyingTo}
             onAddComment={onAddComment}
             depth={0}
+            isLast={i === topLevel.length - 1}
           />
         );
       })}
-    </div>
+    </ul>
   );
 }

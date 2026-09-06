@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import { Button } from '@heroui/react/button';
 import { cn } from '@/lib/utils';
@@ -47,6 +47,19 @@ export function PostReactionButtons({
   const [likesCount, setLikesCount] = useState(initialLikesCount);
   const [dislikesCount, setDislikesCount] = useState(initialDislikesCount);
   const [isToggling, setIsToggling] = useState(false);
+
+  // Sync state when initial props change (e.g., when user reaction is fetched)
+  useEffect(() => {
+    setUserReaction(initialUserReaction);
+  }, [initialUserReaction]);
+
+  useEffect(() => {
+    setLikesCount(initialLikesCount);
+  }, [initialLikesCount]);
+
+  useEffect(() => {
+    setDislikesCount(initialDislikesCount);
+  }, [initialDislikesCount]);
 
   const handleToggle = async (type: ReactionType) => {
     if (!isAuthenticated || isToggling) return;
@@ -117,9 +130,9 @@ export function PostReactionButtons({
   const iconSize = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
 
   return (
-    <div className="inline-flex items-center gap-0 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+    <div className="inline-flex items-center gap-0 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden p-1 w-fit">
       {/* Like/Dislike Group */}
-      <div className="inline-flex items-center">
+      <div className="inline-flex items-center rounded-md overflow-hidden">
         <Button
           type="button"
           variant="secondary"
@@ -170,10 +183,10 @@ export function PostReactionButtons({
       </div>
 
       {/* Separator */}
-      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" aria-hidden="true" role="separator" />
+      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-2" aria-hidden="true" role="separator" />
 
       {/* Comment Group */}
-      <div className="inline-flex items-center">
+      <div className="inline-flex items-center rounded-md overflow-hidden">
         <Button
           type="button"
           variant="secondary"

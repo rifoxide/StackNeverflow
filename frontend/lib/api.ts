@@ -61,6 +61,10 @@ function onRefreshed(token: string) {
 
 api.interceptors.response.use(
   (response) => {
+    // Handle 204 No Content responses (no body to unwrap)
+    if (response.status === 204) {
+      return response;
+    }
     // Unwrap the envelope: { success: true, data: ... } -> data
     if (response.data && response.data.success && 'data' in response.data) {
       return { ...response, data: response.data.data };
@@ -251,11 +255,11 @@ export const notificationsApi = {
       .then((res) => res.data.count),
 
   markAsRead: (id: string) =>
-    api.patch(`/notifications/${id}/read`).then((res) => res.data),
+    api.patch(`/notifications/${id}/read`).then(() => undefined),
 
   markAllAsRead: () =>
-    api.patch('/notifications/read-all').then((res) => res.data),
+    api.patch('/notifications/read-all').then(() => undefined),
 
   delete: (id: string) =>
-    api.delete(`/notifications/${id}`).then((res) => res.data),
+    api.delete(`/notifications/${id}`).then(() => undefined),
 };
