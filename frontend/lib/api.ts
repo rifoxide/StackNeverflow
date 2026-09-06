@@ -173,6 +173,12 @@ export const postsApi = {
 
   create: (dto: CreatePostDto) =>
     api.post<Post>('/posts', dto).then((res) => res.data),
+
+  update: (id: string, dto: { title?: string; body?: string }) =>
+    api.put<Post>(`/posts/${id}`, dto).then((res) => res.data),
+
+  delete: (id: string) =>
+    api.delete(`/posts/${id}`).then((res) => res.data),
 };
 
 // Comments API

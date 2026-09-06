@@ -9,7 +9,8 @@ import { Button } from '@heroui/react/button';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Skeleton } from '@heroui/react/skeleton';
 import { Avatar, AvatarFallback } from '@heroui/react/avatar';
-import { MessageSquare, ArrowLeft, User } from 'lucide-react';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownPopover } from '@heroui/react/dropdown';
+import { MessageSquare, ArrowLeft, User, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { MarkdownViewer } from '@/components/MarkdownViewer';
 import { CommentSection } from '@/components/comments/CommentSection';
 import { PostReactionButtons } from '@/components/posts/PostReactionButtons';
@@ -56,13 +57,15 @@ function ErrorState({ error }: { error: string }) {
 export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const postId = params.id as string;
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
   const [isLoadingReaction, setIsLoadingReaction] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -117,6 +120,22 @@ export default function PostDetailPage() {
     }).format(date);
   };
 
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await postsApi.delete(postId);
+      router.push('/');
+    } catch (err: any) {
+      console.error('Failed to delete post:', err);
+      setError('Failed to delete post. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
+  };
+
+  const isOwnPost = post && user && post.author.id === user.id;
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="mb-6">
@@ -135,21 +154,59 @@ export default function PostDetailPage() {
           {/* Main Post Card */}
           <Card>
             <CardHeader>
-              <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Link
-                  href={`/developers/${post.author.id}`}
-                  className="flex items-center gap-2 hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors"
-                >
-                  <Avatar className="h-8 w-8 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
-                    <AvatarFallback>
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{post.author.name}</span>
-                </Link>
-                <span>•</span>
-                <span>{formatDate(post.createdAt)}</span>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <Link
+                      href={`/developers/${post.author.id}`}
+                      className="flex items-center gap-2 hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors"
+                    >
+                      <Avatar className="h-8 w-8 bg-[#1877F2] dark:bg-[#2D88FF] text-white">
+                        <AvatarFallback>
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{post.author.name}</span>
+                    </Link>
+                    <span>•</span>
+                    <span>{formatDate(post.createdAt)}</span>
+                  </div>
+                </div>
+                {isOwnPost && (
+                  <Dropdown>
+                    <DropdownTrigger className="outline-none cursor-pointer">
+                      <Button variant="tertiary" size="sm" isIconOnly>
+                        <MoreVertical className="h-5 w-5" />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownPopover>
+                      <DropdownMenu>
+                        <DropdownItem
+                          key="edit"
+                          onPress={() => router.push(`/posts/${post.id}/edit`)}
+                          textValue="Edit Post"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Edit className="h-4 w-4" />
+                            <span>Edit Post</span>
+                          </div>
+                        </DropdownItem>
+                        <DropdownItem
+                          key="delete"
+                          onPress={() => setShowDeleteDialog(true)}
+                          className="text-red-600 dark:text-red-400"
+                          textValue="Delete Post"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Trash2 className="h-4 w-4" />
+                            <span>Delete Post</span>
+                          </div>
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </DropdownPopover>
+                  </Dropdown>
+                )}
               </div>
             </CardHeader>
             <CardContent>
@@ -189,6 +246,38 @@ export default function PostDetailPage() {
               )
             }
           />
+
+          {/* Delete Confirmation Dialog */}
+          {showDeleteDialog && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <Card className="max-w-md w-full mx-4">
+                <CardHeader>
+                  <h2 className="text-xl font-bold">Delete Post</h2>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700 dark:text-gray-300 mb-6">
+                    Are you sure you want to delete this post? This action cannot be undone.
+                  </p>
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      variant="secondary"
+                      onClick={() => setShowDeleteDialog(false)}
+                      isDisabled={isDeleting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="bg-red-600 text-white hover:bg-red-700"
+                      onClick={handleDelete}
+                      isDisabled={isDeleting}
+                    >
+                      {isDeleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       ) : null}
     </div>

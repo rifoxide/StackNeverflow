@@ -9,7 +9,8 @@ import { Button } from '@heroui/react/button';
 import { Card, CardHeader, CardContent } from '@heroui/react/card';
 import { Skeleton } from '@heroui/react/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
-import { User, Briefcase, Code, Calendar, ArrowLeft, Edit } from 'lucide-react';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownPopover } from '@heroui/react/dropdown';
+import { User, Briefcase, Code, Calendar, ArrowLeft, Edit, MoreVertical, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatRelativeTime } from '@/lib/comments';
 
@@ -110,21 +111,108 @@ function ExperienceCard({ experience }: { experience: Developer['experiences'][0
   );
 }
 
-function PostCard({ post }: { post: Post }) {
+function PostCard({ post, isOwnProfile, onDelete }: { post: Post; isOwnProfile: boolean; onDelete: (postId: string) => void }) {
+  const router = useRouter();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await postsApi.delete(post.id);
+      onDelete(post.id);
+    } catch (err) {
+      console.error('Failed to delete post:', err);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
+  };
+
   return (
-    <Link href={`/posts/${post.id}`} className="block group">
+    <>
       <Card className="hover:shadow-md transition-all">
         <CardHeader>
-          <h3 className="font-semibold group-hover:text-[#1877F2] dark:group-hover:text-[#2D88FF] transition-colors">
-            {post.title}
-          </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {formatRelativeTime(post.createdAt)} • {post.likesCount} likes • {post.commentCount}{' '}
-            comments
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <Link href={`/posts/${post.id}`} className="block group flex-1">
+              <h3 className="font-semibold group-hover:text-[#1877F2] dark:group-hover:text-[#2D88FF] transition-colors">
+                {post.title}
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {formatRelativeTime(post.createdAt)} • {post.likesCount} likes • {post.commentCount}{' '}
+                comments
+              </p>
+            </Link>
+            {isOwnProfile && (
+              <Dropdown>
+                <DropdownTrigger className="outline-none cursor-pointer">
+                  <Button variant="tertiary" size="sm" isIconOnly>
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownPopover>
+                  <DropdownMenu>
+                    <DropdownItem
+                      key="edit"
+                      onPress={() => router.push(`/posts/${post.id}/edit`)}
+                      textValue="Edit Post"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Edit className="h-4 w-4" />
+                        <span>Edit Post</span>
+                      </div>
+                    </DropdownItem>
+                    <DropdownItem
+                      key="delete"
+                      onPress={() => setShowDeleteDialog(true)}
+                      className="text-red-600 dark:text-red-400"
+                      textValue="Delete Post"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Trash2 className="h-4 w-4" />
+                        <span>Delete Post</span>
+                      </div>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </DropdownPopover>
+              </Dropdown>
+            )}
+          </div>
         </CardHeader>
       </Card>
-    </Link>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <Card className="max-w-md w-full mx-4">
+            <CardHeader>
+              <h2 className="text-xl font-bold">Delete Post</h2>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                Are you sure you want to delete this post? This action cannot be undone.
+              </p>
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowDeleteDialog(false)}
+                  isDisabled={isDeleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-red-600 text-white hover:bg-red-700"
+                  onClick={handleDelete}
+                  isDisabled={isDeleting}
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -318,7 +406,7 @@ export default function DeveloperProfilePage() {
                 ) : posts.length > 0 ? (
                   <div className="space-y-3">
                     {posts.map((post) => (
-                      <PostCard key={post.id} post={post} />
+                      <PostCard key={post.id} post={post} isOwnProfile={isOwnProfile} onDelete={(postId) => setPosts((prev) => prev.filter((p) => p.id !== postId))} />
                     ))}
                   </div>
                 ) : (

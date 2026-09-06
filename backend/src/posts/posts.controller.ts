@@ -2,11 +2,15 @@ import {
   Controller,
   Get,
   Post,
+  Put,
+  Delete,
   Body,
   Param,
   Query,
   ParseIntPipe,
   DefaultValuePipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service.js';
 import { CreatePostDto } from './dto/create-post.dto.js';
+import { UpdatePostDto } from './dto/update-post.dto.js';
 import { Public } from '../common/decorators/public.decorator.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 import type { User } from '../users/user.entity.js';
@@ -130,5 +135,78 @@ export class PostsController {
   })
   async findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
+  }
+
+  /**
+   * Update a post.
+   * PUT /posts/:id
+   * Protected endpoint - requires authentication and ownership.
+   *
+   * @param id - Post ID
+   * @param user - Current authenticated user
+   * @param updatePostDto - Updated post data
+   * @returns Updated post
+   */
+  @Put(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a post' })
+  @ApiResponse({
+    status: 200,
+    description: 'Post updated successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation error',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - not the post author',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Post not found',
+  })
+  async update(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    return this.postsService.update(id, user.id, updatePostDto);
+  }
+
+  /**
+   * Delete a post.
+   * DELETE /posts/:id
+   * Protected endpoint - requires authentication and ownership.
+   *
+   * @param id - Post ID
+   * @param user - Current authenticated user
+   */
+  @Delete(':id')
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a post' })
+  @ApiResponse({
+    status: 204,
+    description: 'Post deleted successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - not the post author',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Post not found',
+  })
+  async delete(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.postsService.delete(id, user.id);
   }
 }

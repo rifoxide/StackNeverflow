@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { Post } from './post.entity.js';
 import { CreatePostDto } from './dto/create-post.dto.js';
+import { UpdatePostDto } from './dto/update-post.dto.js';
 
 /**
  * Service for managing posts.
@@ -106,6 +111,71 @@ export class PostsService {
     }
 
     return post;
+  }
+
+  /**
+   * Update a post.
+   * Only the post author can update their post.
+   *
+   * @param postId - Post ID
+   * @param userId - Current user ID
+   * @param updatePostDto - Updated post data
+   * @returns Updated post
+   * @throws NotFoundException if post not found
+   * @throws ForbiddenException if user is not the author
+   */
+  async update(
+    postId: string,
+    userId: string,
+    updatePostDto: UpdatePostDto,
+  ): Promise<Post> {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: { author: true },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+
+    if (post.authorId !== userId) {
+      throw new ForbiddenException('You can only edit your own posts');
+    }
+
+    // Update fields if provided
+    if (updatePostDto.title !== undefined) {
+      post.title = updatePostDto.title;
+    }
+    if (updatePostDto.body !== undefined) {
+      post.body = updatePostDto.body;
+    }
+
+    return await this.postRepository.save(post);
+  }
+
+  /**
+   * Delete a post.
+   * Only the post author can delete their post.
+   *
+   * @param postId - Post ID
+   * @param userId - Current user ID
+   * @throws NotFoundException if post not found
+   * @throws ForbiddenException if user is not the author
+   */
+  async delete(postId: string, userId: string): Promise<void> {
+    const post = await this.postRepository.findOne({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+
+    if (post.authorId !== userId) {
+      throw new ForbiddenException('You can only delete your own posts');
+    }
+
+    await this.postRepository.remove(post);
   }
 
   /**
