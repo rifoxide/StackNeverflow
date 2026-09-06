@@ -80,6 +80,24 @@ A modern developer Q&A platform built with Next.js, NestJS, and PostgreSQL. Feat
    ```
 
 4. **Set up the database**
+
+   **Option A: Using Docker (Recommended)**
+   ```bash
+   # Start PostgreSQL in Docker
+   docker-compose up -d
+
+   # Wait for database to be ready (health check will confirm)
+   docker-compose ps
+
+   # Run migrations
+   cd backend
+   npm run migration:run
+
+   # Seed with sample data (optional but recommended)
+   npm run seed
+   ```
+
+   **Option B: Using existing PostgreSQL installation**
    ```bash
    # Create the database
    createdb stackneverflow
@@ -91,6 +109,9 @@ A modern developer Q&A platform built with Next.js, NestJS, and PostgreSQL. Feat
    # Seed with sample data (optional but recommended)
    npm run seed
    ```
+
+   > **Note**: If using Docker, update your `backend/.env` to match the Docker credentials:
+   > `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/stackneverflow`
 
 5. **Start the development servers**
 
