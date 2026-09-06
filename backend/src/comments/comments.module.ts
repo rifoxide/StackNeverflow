@@ -5,6 +5,7 @@ import { CommentsService } from './comments.service.js';
 import { Comment } from './comment.entity.js';
 import { Post } from '../posts/post.entity.js';
 import { PostsModule } from '../posts/posts.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 
 /**
  * Comments module.
@@ -13,7 +14,11 @@ import { PostsModule } from '../posts/posts.module.js';
  * the post exists and to increment `commentCount`).
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment, Post]), PostsModule],
+  imports: [
+    TypeOrmModule.forFeature([Comment, Post]),
+    PostsModule,
+    NotificationsModule,
+  ],
   controllers: [CommentsController],
   providers: [CommentsService],
   exports: [CommentsService],

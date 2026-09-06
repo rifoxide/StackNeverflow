@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react';
 import { Button } from '@heroui/react/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,10 +12,13 @@ interface PostReactionButtonsProps {
   postId: string;
   initialLikesCount: number;
   initialDislikesCount: number;
+  commentCount?: number;
   /** Current user's reaction on this post, or null. */
   initialUserReaction: ReactionType | null;
   /** Callback after successful reaction toggle. */
   onReactionChange?: (newCounts: { likesCount: number; dislikesCount: number }) => void;
+  /** Callback when comment button is clicked */
+  onCommentClick?: () => void;
   /** Size variant — md for detail page, sm for feed. */
   size?: 'sm' | 'md';
 }
@@ -33,8 +36,10 @@ export function PostReactionButtons({
   postId,
   initialLikesCount,
   initialDislikesCount,
+  commentCount = 0,
   initialUserReaction,
   onReactionChange,
+  onCommentClick,
   size = 'md',
 }: PostReactionButtonsProps) {
   const { isAuthenticated } = useAuth();
@@ -112,52 +117,75 @@ export function PostReactionButtons({
   const iconSize = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
 
   return (
-    <div className="flex items-center gap-1">
-      <Button
-        type="button"
-        variant="secondary"
-        size={size}
-        aria-label={isAuthenticated ? 'Like' : 'Like (log in to react)'}
-        isDisabled={!isAuthenticated || isToggling}
-        onClick={() => handleToggle('like')}
-        className={cn(
-          sizeClass,
-          'gap-1.5',
-          userReaction === 'like' &&
-            'bg-[#1877F2]/10 text-[#1877F2] dark:bg-[#2D88FF]/20 dark:text-[#2D88FF] hover:bg-[#1877F2]/20',
-        )}
-      >
-        <ThumbsUp
+    <div className="inline-flex items-center gap-0 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+      {/* Like/Dislike Group */}
+      <div className="inline-flex items-center">
+        <Button
+          type="button"
+          variant="secondary"
+          size={size}
+          aria-label={isAuthenticated ? 'Like' : 'Like (log in to react)'}
+          isDisabled={!isAuthenticated || isToggling}
+          onClick={() => handleToggle('like')}
           className={cn(
-            iconSize,
-            userReaction === 'like' && 'fill-current',
+            sizeClass,
+            'gap-1.5 rounded-none border-0',
+            userReaction === 'like' &&
+              'bg-[#1877F2]/10 text-[#1877F2] dark:bg-[#2D88FF]/20 dark:text-[#2D88FF] hover:bg-[#1877F2]/20',
           )}
-        />
-        <span>{likesCount}</span>
-      </Button>
+        >
+          <ThumbsUp
+            className={cn(
+              iconSize,
+              userReaction === 'like' && 'fill-current',
+            )}
+          />
+          <span>{likesCount}</span>
+        </Button>
 
-      <Button
-        type="button"
-        variant="secondary"
-        size={size}
-        aria-label={isAuthenticated ? 'Dislike' : 'Dislike (log in to react)'}
-        isDisabled={!isAuthenticated || isToggling}
-        onClick={() => handleToggle('dislike')}
-        className={cn(
-          sizeClass,
-          'gap-1.5',
-          userReaction === 'dislike' &&
-            'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 hover:bg-red-500/20',
-        )}
-      >
-        <ThumbsDown
+        <div className="w-px h-4 bg-gray-300 dark:bg-gray-600" aria-hidden="true" />
+
+        <Button
+          type="button"
+          variant="secondary"
+          size={size}
+          aria-label={isAuthenticated ? 'Dislike' : 'Dislike (log in to react)'}
+          isDisabled={!isAuthenticated || isToggling}
+          onClick={() => handleToggle('dislike')}
           className={cn(
-            iconSize,
-            userReaction === 'dislike' && 'fill-current',
+            sizeClass,
+            'gap-1.5 rounded-none border-0',
+            userReaction === 'dislike' &&
+              'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 hover:bg-red-500/20',
           )}
-        />
-        <span>{dislikesCount}</span>
-      </Button>
+        >
+          <ThumbsDown
+            className={cn(
+              iconSize,
+              userReaction === 'dislike' && 'fill-current',
+            )}
+          />
+          <span>{dislikesCount}</span>
+        </Button>
+      </div>
+
+      {/* Separator */}
+      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" aria-hidden="true" role="separator" />
+
+      {/* Comment Group */}
+      <div className="inline-flex items-center">
+        <Button
+          type="button"
+          variant="secondary"
+          size={size}
+          aria-label="Comments"
+          onClick={onCommentClick}
+          className={cn(sizeClass, 'gap-1.5 rounded-none border-0')}
+        >
+          <MessageSquare className={iconSize} />
+          <span>{commentCount}</span>
+        </Button>
+      </div>
     </div>
   );
 }

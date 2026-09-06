@@ -87,6 +87,7 @@ function PostCard({
   userReaction: ReactionType | null;
   onUpdate: (postId: string, newCounts: { likesCount: number; dislikesCount: number }) => void;
 }) {
+  const router = useRouter();
   return (
     <Card className="hover:shadow-lg transition-all border-0 shadow-sm">
       <CardHeader>
@@ -115,20 +116,16 @@ function PostCard({
         <div className="prose prose-sm dark:prose-invert max-w-none line-clamp-3 mb-4">
           <MarkdownViewer content={post.body} />
         </div>
-        <div className="flex items-center gap-4">
-          <PostReactionButtons
-            postId={post.id}
-            initialLikesCount={post.likesCount}
-            initialDislikesCount={post.dislikesCount}
-            initialUserReaction={userReaction}
-            size="sm"
-            onReactionChange={(newCounts) => onUpdate(post.id, newCounts)}
-          />
-          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-            <MessageSquare className="h-4 w-4" />
-            <span>{post.commentCount}</span>
-          </div>
-        </div>
+        <PostReactionButtons
+          postId={post.id}
+          initialLikesCount={post.likesCount}
+          initialDislikesCount={post.dislikesCount}
+          commentCount={post.commentCount}
+          initialUserReaction={userReaction}
+          size="sm"
+          onReactionChange={(newCounts) => onUpdate(post.id, newCounts)}
+          onCommentClick={() => router.push(`/posts/${post.id}`)}
+        />
       </CardContent>
     </Card>
   );

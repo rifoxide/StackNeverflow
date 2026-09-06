@@ -19,6 +19,7 @@ import type {
   Skill,
   Experience,
 } from './types';
+import type { Notification, NotificationList } from './types/notifications';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -227,4 +228,28 @@ export const developersApi = {
       },
     }).then((res) => res.data);
   },
+};
+
+// Notifications API
+export const notificationsApi = {
+  getAll: (page: number = 1, limit: number = 20) =>
+    api
+      .get<NotificationList>('/notifications', {
+        params: { page, limit },
+      })
+      .then((res) => res.data),
+
+  getUnreadCount: () =>
+    api
+      .get<{ count: number }>('/notifications/unread-count')
+      .then((res) => res.data.count),
+
+  markAsRead: (id: string) =>
+    api.patch(`/notifications/${id}/read`).then((res) => res.data),
+
+  markAllAsRead: () =>
+    api.patch('/notifications/read-all').then((res) => res.data),
+
+  delete: (id: string) =>
+    api.delete(`/notifications/${id}`).then((res) => res.data),
 };

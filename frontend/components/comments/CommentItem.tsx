@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Reply, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@heroui/react/avatar';
-import { Button } from '@heroui/react/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatRelativeTime } from '@/lib/comments';
@@ -259,28 +258,16 @@ export function CommentItem({
               />
             </div>
 
-            <div className="mt-2 flex items-center gap-1">
+            <div className="mt-2">
               <CommentReactionButtons
                 likesCount={comment.likesCount}
                 dislikesCount={comment.dislikesCount}
                 userReaction={getUserReaction(comment.id)}
                 onToggle={(type) => onToggleReaction(comment.id, type)}
+                showReply={isAuthenticated}
+                onReply={() => onSetReplyingTo(showReplyForm ? null : comment.id)}
+                replyLabel={showReplyForm ? 'Cancel' : 'Reply'}
               />
-              {isAuthenticated && (
-                <Button
-                  type="button"
-                  variant="tertiary"
-                  size="sm"
-                  onClick={() =>
-                    onSetReplyingTo(showReplyForm ? null : comment.id)
-                  }
-                  className="h-8 px-2 text-xs gap-1.5"
-                  aria-label={showReplyForm ? 'Cancel reply' : 'Reply'}
-                >
-                  <Reply className="h-3.5 w-3.5" />
-                  <span>{showReplyForm ? 'Cancel' : 'Reply'}</span>
-                </Button>
-              )}
             </div>
 
             {showReplyForm && (

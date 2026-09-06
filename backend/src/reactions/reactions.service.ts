@@ -10,6 +10,8 @@ import { Post } from '../posts/post.entity.js';
 import { Comment } from '../comments/comment.entity.js';
 import { ToggleReactionDto } from './dto/toggle-reaction.dto.js';
 import { PostsService } from '../posts/posts.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
+import { User } from '../users/user.entity.js';
 
 /**
  * Result of toggling a reaction.
@@ -43,6 +45,7 @@ export class ReactionsService {
     private readonly commentRepository: Repository<Comment>,
     private readonly dataSource: DataSource,
     private readonly postsService: PostsService,
+    private readonly notificationsService: NotificationsService,
   ) {
     // Repositories are reserved for non-transactional reads. Mutating
     // paths always go through the dataSource transaction so writes stay
@@ -67,19 +70,29 @@ export class ReactionsService {
       let comment: Comment | null = null;
 
       if (dto.targetType === 'post') {
-        post = await manager.findOne(Post, { where: { id: dto.targetId } });
+        post = await manager.findOne(Post, {
+          where: { id: dto.targetId },
+          relations: { author: true },
+        });
         if (!post) {
           throw new NotFoundException(`Post with ID ${dto.targetId} not found`);
         }
       } else {
         comment = await manager.findOne(Comment, {
           where: { id: dto.targetId },
+          relations: { author: true, post: true },
         });
         if (!comment) {
           throw new NotFoundException(
             `Comment with ID ${dto.targetId} not found`,
           );
         }
+      }
+
+      // Get the acting user's name for the notification
+      const actor = await manager.findOne(User, { where: { id: userId } });
+      if (!actor) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
       }
 
       // Look for existing reaction
@@ -92,6 +105,7 @@ export class ReactionsService {
       });
 
       let nextReaction: 'like' | 'dislike' | null = dto.type;
+      let shouldNotify = false;
 
       if (existing) {
         if (existing.type === dto.type) {
@@ -102,6 +116,7 @@ export class ReactionsService {
           // Switch — opposite type → update
           existing.type = dto.type;
           await manager.save(Reaction, existing);
+          shouldNotify = true;
         }
       } else {
         // No existing reaction → create
@@ -112,6 +127,7 @@ export class ReactionsService {
           type: dto.type,
         });
         await manager.save(Reaction, reaction);
+        shouldNotify = true;
       }
 
       // Recalculate denormalized counts from the source of truth.
@@ -137,11 +153,38 @@ export class ReactionsService {
         setImmediate(() => {
           void this.postsService.recalculateRankScore(post.id);
         });
+
+        // Create notification for post reaction
+        if (shouldNotify) {
+          setImmediate(() => {
+            void this.notificationsService.createPostReactionNotification(
+              post.id,
+              post.author.id,
+              userId,
+              actor.name,
+              dto.type,
+            );
+          });
+        }
       } else if (comment) {
         await manager.update(Comment, comment!.id, {
           likesCount: likeCount,
           dislikesCount: dislikeCount,
         });
+
+        // Create notification for comment reaction
+        if (shouldNotify) {
+          setImmediate(() => {
+            void this.notificationsService.createCommentReactionNotification(
+              comment.id,
+              comment.author.id,
+              userId,
+              actor.name,
+              dto.type,
+              comment.post.id,
+            );
+          });
+        }
       }
 
       return {

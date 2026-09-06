@@ -7,8 +7,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Comment } from './comment.entity.js';
 import { Post } from '../posts/post.entity.js';
+import { User } from '../users/user.entity.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
 import { PostsService } from '../posts/posts.service.js';
+import { NotificationsService } from '../notifications/notifications.service.js';
 
 /**
  * Service for managing comments and replies.
@@ -23,6 +25,7 @@ export class CommentsService {
     private readonly postRepository: Repository<Post>,
     private readonly dataSource: DataSource,
     private readonly postsService: PostsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -47,22 +50,33 @@ export class CommentsService {
     return this.dataSource.transaction(async (manager) => {
       // Verify post exists. Done inside the transaction so the FK is
       // authoritative — if the post is missing we get a clean 404.
-      const post = await manager.findOne(Post, { where: { id: postId } });
+      const post = await manager.findOne(Post, {
+        where: { id: postId },
+        relations: { author: true },
+      });
       if (!post) {
         throw new NotFoundException(`Post with ID ${postId} not found`);
       }
 
+      // Get the comment author for notification
+      const author = await manager.findOne(User, { where: { id: authorId } });
+      if (!author) {
+        throw new NotFoundException(`User with ID ${authorId} not found`);
+      }
+
       // Validate parent comment if replying
+      let parentComment: Comment | null = null;
       if (dto.parentCommentId) {
-        const parent = await manager.findOne(Comment, {
+        parentComment = await manager.findOne(Comment, {
           where: { id: dto.parentCommentId },
+          relations: { author: true },
         });
-        if (!parent) {
+        if (!parentComment) {
           throw new BadRequestException(
             `Parent comment with ID ${dto.parentCommentId} not found`,
           );
         }
-        if (parent.postId !== postId) {
+        if (parentComment.postId !== postId) {
           throw new BadRequestException(
             'Parent comment belongs to a different post',
           );
@@ -88,6 +102,31 @@ export class CommentsService {
       setImmediate(() => {
         void this.postsService.recalculateRankScore(postId);
       });
+
+      // Create notification
+      if (parentComment) {
+        // Reply to comment notification
+        setImmediate(() => {
+          void this.notificationsService.createCommentReplyNotification(
+            parentComment.author.id,
+            authorId,
+            author.name,
+            saved.id,
+            postId,
+          );
+        });
+      } else {
+        // Comment on post notification
+        setImmediate(() => {
+          void this.notificationsService.createPostCommentNotification(
+            postId,
+            post.author.id,
+            authorId,
+            author.name,
+            saved.id,
+          );
+        });
+      }
 
       // Return with author loaded so the response includes name
       return manager.findOne(Comment, {

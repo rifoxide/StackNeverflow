@@ -7,6 +7,7 @@ import { Post } from '../posts/post.entity.js';
 import { Comment } from '../comments/comment.entity.js';
 import { PostsModule } from '../posts/posts.module.js';
 import { CommentsModule } from '../comments/comments.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 
 /**
  * Reactions module.
@@ -21,6 +22,7 @@ import { CommentsModule } from '../comments/comments.module.js';
     TypeOrmModule.forFeature([Reaction, Post, Comment]),
     PostsModule,
     CommentsModule,
+    NotificationsModule,
   ],
   controllers: [ReactionsController],
   providers: [ReactionsService],
