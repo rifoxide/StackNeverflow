@@ -1,6 +1,10 @@
-# StackNeverflow
+<div align="center">
+  <img src="frontend/public/logo.svg" alt="StackNeverflow Logo" width="150" height="150">
+  
+  # StackNeverflow
 
-A modern developer Q&A platform built with Next.js, NestJS, and PostgreSQL. Features include posts, nested comments with threaded replies, reactions (likes/dislikes), developer profiles with skills and work experience, and a ranked feed algorithm.
+  A modern developer Q&A platform built with Next.js, NestJS, and PostgreSQL. Features include posts, nested comments with threaded replies, reactions (likes/dislikes), developer profiles with skills and work experience, and a ranked feed algorithm.
+</div>
 
 ## Features
 
