@@ -232,7 +232,6 @@ function PostCard({
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
-  const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -312,21 +311,11 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">Feed</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Discover knowledge shared by the community
-            </p>
-          </div>
-          {isAuthenticated && (
-            <Button
-              onClick={() => router.push('/posts/new')}
-              className="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white shadow-lg shadow-brand-500/30"
-            >
-              Create Post
-            </Button>
-          )}
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">Feed</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Discover knowledge shared by the community
+          </p>
         </div>
 
         {/* Search */}

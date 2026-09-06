@@ -6,7 +6,7 @@ import { Button } from '@heroui/react/button';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownPopover } from '@heroui/react/dropdown';
 import { Avatar, AvatarFallback, AvatarImage } from '@heroui/react/avatar';
 import { TabsRoot, TabList, Tab } from '@heroui/react/tabs';
-import { Home, Bell, User, Moon, Sun, LogOut } from 'lucide-react';
+import { Home, Bell, User, Moon, Sun, LogOut, Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Logo } from '@/components/Logo';
@@ -183,7 +183,7 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           {isAuthenticated && (
-            <nav className="flex items-center gap-6">
+            <nav className="flex items-center gap-3">
               <TabsRoot
                 selectedKey={getActiveTab()}
                 onSelectionChange={handleTabChange}
@@ -215,6 +215,14 @@ export function Navbar() {
                   </Tab>
                 </TabList>
               </TabsRoot>
+              <Button
+                size="sm"
+                onPress={() => router.push('/posts/new')}
+                className="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white shadow-md shadow-brand-500/30"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                <span className="font-medium">Post</span>
+              </Button>
             </nav>
           )}
 
@@ -244,37 +252,47 @@ export function Navbar() {
 
           {/* Mobile Navigation Buttons */}
           {isAuthenticated && (
-            <TabsRoot
-              selectedKey={getActiveTab()}
-              onSelectionChange={handleTabChange}
-              variant="primary"
-            >
-              <TabList className="flex gap-1.5 bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-full w-full backdrop-blur-sm">
-                <Tab id="feed" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <Home className="h-4 w-4" />
-                    <span className="text-sm font-medium">Feed</span>
-                  </div>
-                </Tab>
-                <Tab id="profile" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <User className="h-4 w-4" />
-                    <span className="text-sm font-medium">Profile</span>
-                  </div>
-                </Tab>
-                <Tab id="notifications" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
-                  <div className="flex items-center justify-center gap-1.5 relative">
-                    <Bell className="h-4 w-4" />
-                    <span className="text-sm font-medium">Notifications</span>
-                    {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-[9px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-lg animate-pulse">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
-                    )}
-                  </div>
-                </Tab>
-              </TabList>
-            </TabsRoot>
+            <div className="space-y-2">
+              <Button
+                size="sm"
+                onPress={() => router.push('/posts/new')}
+                className="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white shadow-md shadow-brand-500/30"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                <span className="font-medium">Create Post</span>
+              </Button>
+              <TabsRoot
+                selectedKey={getActiveTab()}
+                onSelectionChange={handleTabChange}
+                variant="primary"
+              >
+                <TabList className="flex gap-1.5 bg-gray-100/80 dark:bg-gray-800/80 p-1.5 rounded-full w-full backdrop-blur-sm">
+                  <Tab id="feed" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <Home className="h-4 w-4" />
+                      <span className="text-sm font-medium">Feed</span>
+                    </div>
+                  </Tab>
+                  <Tab id="profile" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <User className="h-4 w-4" />
+                      <span className="text-sm font-medium">Profile</span>
+                    </div>
+                  </Tab>
+                  <Tab id="notifications" className="flex-1 px-3 py-2 rounded-full data-[selected=true]:bg-white dark:data-[selected=true]:bg-gray-700 data-[selected=true]:shadow-lg transition-all text-gray-600 dark:text-gray-400 data-[selected=true]:text-brand-600 dark:data-[selected=true]:text-brand-400">
+                    <div className="flex items-center justify-center gap-1.5 relative">
+                      <Bell className="h-4 w-4" />
+                      <span className="text-sm font-medium">Notifications</span>
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center text-[9px] font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-full shadow-lg animate-pulse">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  </Tab>
+                </TabList>
+              </TabsRoot>
+            </div>
           )}
         </div>
       </div>
