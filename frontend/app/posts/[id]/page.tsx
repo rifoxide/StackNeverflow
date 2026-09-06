@@ -171,6 +171,14 @@ export default function PostDetailPage() {
                     </Link>
                     <span>•</span>
                     <span>{formatDate(post.createdAt)}</span>
+                    {post.updatedAt !== post.createdAt && (
+                      <>
+                        <span>•</span>
+                        <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                          edited
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
                 {isOwnPost && (
