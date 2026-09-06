@@ -13,6 +13,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
 import { CommentsService } from './comments.service.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
@@ -38,10 +39,11 @@ export class CommentsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a comment or reply on a post' })
-  @ApiParam({ name: 'postId', description: 'Target post id', format: 'uuid' })
-  @ApiResponse({ status: 201, description: 'Comment created' })
-  @ApiResponse({ status: 400, description: 'Invalid parent comment' })
+  @ApiOperation({ summary: 'Create a comment or reply on a post', description: '🔒 Requires authentication. Creates a top-level comment or reply to another comment.' })
+  @ApiParam({ name: 'postId', description: 'Target post UUID', format: 'uuid' })
+  @ApiBody({ type: CreateCommentDto, description: 'Comment content and optional parent comment ID for replies' })
+  @ApiResponse({ status: 201, description: 'Comment created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid parent comment or validation error' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Post not found' })
   async create(
@@ -59,11 +61,11 @@ export class CommentsController {
    */
   @Public()
   @Get()
-  @ApiOperation({ summary: 'List all comments for a post' })
-  @ApiParam({ name: 'postId', description: 'Target post id', format: 'uuid' })
+  @ApiOperation({ summary: 'List all comments for a post', description: '🌐 Public. Returns flat list of comments with author information, ordered by creation date.' })
+  @ApiParam({ name: 'postId', description: 'Target post UUID', format: 'uuid' })
   @ApiResponse({
     status: 200,
-    description: 'Flat list of comments with author info',
+    description: 'Flat list of comments with author info and parent comment references',
   })
   @ApiResponse({ status: 404, description: 'Post not found' })
   async findAll(@Param('postId') postId: string) {

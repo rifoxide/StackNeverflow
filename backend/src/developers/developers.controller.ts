@@ -7,11 +7,9 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  UseInterceptors,
-  UploadedFile,
   BadRequestException,
+  Req,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
@@ -19,9 +17,12 @@ import {
   ApiBearerAuth,
   ApiConsumes,
   ApiBody,
+  ApiParam,
 } from '@nestjs/swagger';
-import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
+import type { FastifyRequest } from 'fastify';
 import { DevelopersService } from './developers.service.js';
 import { UpdateSkillsDto } from './dto/update-skills.dto.js';
 import { UpdateExperiencesDto } from './dto/update-experiences.dto.js';
@@ -48,7 +49,8 @@ export class DevelopersController {
    */
   @Public()
   @Get(':id')
-  @ApiOperation({ summary: 'Get developer profile by ID' })
+  @ApiOperation({ summary: 'Get developer profile by ID', description: '🌐 Public. Fetches developer profile with skills and work experiences.' })
+  @ApiParam({ name: 'id', description: 'User UUID', format: 'uuid' })
   @ApiResponse({
     status: 200,
     description: 'Returns developer profile with skills and experiences',
@@ -71,7 +73,7 @@ export class DevelopersController {
    */
   @Get('me')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get own developer profile' })
+  @ApiOperation({ summary: 'Get own developer profile', description: '🔒 Requires authentication. Returns own profile with skills and experiences.' })
   @ApiResponse({
     status: 200,
     description: 'Returns own profile with skills and experiences',
@@ -96,7 +98,8 @@ export class DevelopersController {
   @Put('me/skills')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update own skills' })
+  @ApiOperation({ summary: 'Update own skills', description: '🔒 Requires authentication. Replaces entire skills array (transactional delete-then-insert).' })
+  @ApiBody({ type: UpdateSkillsDto, description: 'Skills array (replaces existing)' })
   @ApiResponse({
     status: 200,
     description: 'Skills updated successfully',
@@ -128,7 +131,8 @@ export class DevelopersController {
   @Put('me/experiences')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update own work experiences' })
+  @ApiOperation({ summary: 'Update own work experiences', description: '🔒 Requires authentication. Replaces entire experiences array (transactional delete-then-insert).' })
+  @ApiBody({ type: UpdateExperiencesDto, description: 'Experiences array (replaces existing)' })
   @ApiResponse({
     status: 200,
     description: 'Experiences updated successfully',
@@ -157,21 +161,23 @@ export class DevelopersController {
    * Accepts multipart/form-data with 'file' field.
    *
    * @param user - Current authenticated user
-   * @param file - Uploaded image file
+   * @param req - Fastify request with multipart data
    * @returns Updated user with new profile picture URL
    */
   @Post('me/profile-picture')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload profile picture' })
+  @ApiOperation({ summary: 'Upload profile picture', description: '🔒 Requires authentication. Accepts image files (JPEG, PNG, GIF, WEBP) up to 5MB.' })
   @ApiBody({
+    description: 'Image file (max 5MB)',
     schema: {
       type: 'object',
       properties: {
         file: {
           type: 'string',
           format: 'binary',
+          description: 'Profile picture image file',
         },
       },
     },
@@ -182,48 +188,67 @@ export class DevelopersController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid file type or size',
+    description: 'Invalid file type or size (max 5MB, allowed: JPEG, PNG, GIF, WEBP)',
   })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized',
   })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads/avatars',
-        filename: (_req, file, callback) => {
-          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-          const ext = extname(file.originalname);
-          callback(null, `avatar-${uniqueSuffix}${ext}`);
-        },
-      }),
-      limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
-      },
-      fileFilter: (_req, file, callback) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
-          return callback(
-            new BadRequestException('Only image files are allowed'),
-            false,
-          );
-        }
-        callback(null, true);
-      },
-    }),
-  )
   async uploadProfilePicture(
     @CurrentUser() user: User,
-    @UploadedFile() file: Express.Multer.File,
+    @Req() req: FastifyRequest,
   ) {
-    if (!file) {
-      throw new BadRequestException('No file uploaded');
+    // Check if request is multipart
+    if (!req.isMultipart()) {
+      throw new BadRequestException('Request must be multipart/form-data');
     }
 
-    const profilePictureUrl = `/uploads/avatars/${file.filename}`;
-    return this.developersService.updateProfilePicture(
-      user.id,
-      profilePictureUrl,
-    );
+    try {
+      // Get the file from the multipart request
+      const data = await req.file();
+
+      if (!data) {
+        throw new BadRequestException('No file uploaded');
+      }
+
+      // Validate file type
+      const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedMimeTypes.includes(data.mimetype)) {
+        throw new BadRequestException('Only image files (JPEG, PNG, GIF, WEBP) are allowed');
+      }
+
+      // Read file buffer
+      const buffer = await data.toBuffer();
+
+      // Validate file size (5MB)
+      if (buffer.length > 5 * 1024 * 1024) {
+        throw new BadRequestException('Image must be smaller than 5MB');
+      }
+
+      // Generate unique filename
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const ext = extname(data.filename);
+      const filename = `avatar-${uniqueSuffix}${ext}`;
+
+      // Ensure uploads directory exists
+      const uploadDir = join(process.cwd(), 'uploads', 'avatars');
+      await mkdir(uploadDir, { recursive: true });
+
+      // Write file to disk
+      const filepath = join(uploadDir, filename);
+      await writeFile(filepath, buffer);
+
+      // Update user profile with new picture URL
+      const profilePictureUrl = `/uploads/avatars/${filename}`;
+      return this.developersService.updateProfilePicture(
+        user.id,
+        profilePictureUrl,
+      );
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException('Failed to upload file');
+    }
   }
 }

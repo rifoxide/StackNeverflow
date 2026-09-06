@@ -18,6 +18,8 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service.js';
 import { CreatePostDto } from './dto/create-post.dto.js';
@@ -46,7 +48,8 @@ export class PostsController {
    */
   @Post()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new post' })
+  @ApiOperation({ summary: 'Create a new post', description: '🔒 Requires authentication. Creates a new post with title, body, and tags.' })
+  @ApiBody({ type: CreatePostDto, description: 'Post creation payload' })
   @ApiResponse({
     status: 201,
     description: 'Post created successfully',
@@ -78,7 +81,7 @@ export class PostsController {
    */
   @Public()
   @Get()
-  @ApiOperation({ summary: 'Get all posts (paginated, ranked, searchable)' })
+  @ApiOperation({ summary: 'Get all posts (paginated, ranked, searchable)', description: '🌐 Public. Returns posts ordered by rank score and creation date with optional search.' })
   @ApiQuery({
     name: 'page',
     required: false,
@@ -102,7 +105,7 @@ export class PostsController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Returns paginated posts with metadata',
+    description: 'Returns paginated posts with metadata (total, page, limit, data)',
   })
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
@@ -124,7 +127,8 @@ export class PostsController {
    */
   @Public()
   @Get(':id')
-  @ApiOperation({ summary: 'Get post by ID' })
+  @ApiOperation({ summary: 'Get post by ID', description: '🌐 Public. Returns a single post with full details and author information.' })
+  @ApiParam({ name: 'id', description: 'Post UUID', format: 'uuid' })
   @ApiResponse({
     status: 200,
     description: 'Returns post with author information',
@@ -149,7 +153,9 @@ export class PostsController {
    */
   @Put(':id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a post' })
+  @ApiOperation({ summary: 'Update a post', description: '🔒 Requires authentication and ownership. Updates post title, body, or tags.' })
+  @ApiParam({ name: 'id', description: 'Post UUID', format: 'uuid' })
+  @ApiBody({ type: UpdatePostDto, description: 'Post update payload' })
   @ApiResponse({
     status: 200,
     description: 'Post updated successfully',
@@ -189,7 +195,8 @@ export class PostsController {
   @Delete(':id')
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete a post' })
+  @ApiOperation({ summary: 'Delete a post', description: '🔒 Requires authentication and ownership. Permanently deletes a post and its comments.' })
+  @ApiParam({ name: 'id', description: 'Post UUID', format: 'uuid' })
   @ApiResponse({
     status: 204,
     description: 'Post deleted successfully',

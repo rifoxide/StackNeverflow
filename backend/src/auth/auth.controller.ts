@@ -13,6 +13,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiBody,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import type { FastifyReply } from 'fastify';
@@ -48,7 +49,12 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new user' })
+  @ApiOperation({
+    summary: 'Register a new user',
+    description:
+      '🌐 Public. Creates a new user account with email and password.',
+  })
+  @ApiBody({ type: RegisterDto, description: 'User registration credentials' })
   @ApiResponse({
     status: 201,
     description: 'User successfully registered',
@@ -77,7 +83,15 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login user' })
+  @ApiOperation({
+    summary: 'Login user',
+    description:
+      '🌐 Public. Authenticates user and returns access token. Sets httpOnly refresh token cookie.',
+  })
+  @ApiBody({
+    type: LoginDto,
+    description: 'Login credentials (email and password)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Login successful, returns access token',
@@ -118,7 +132,11 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt-refresh'))
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiOperation({
+    summary: 'Refresh access token',
+    description:
+      '🌐 Public (uses refresh token from httpOnly cookie). Issues new access and refresh tokens (token rotation).',
+  })
   @ApiResponse({
     status: 200,
     description: 'Tokens refreshed successfully',
@@ -158,7 +176,11 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Logout user' })
+  @ApiOperation({
+    summary: 'Logout user',
+    description:
+      '🔒 Requires authentication. Invalidates refresh token and clears httpOnly cookie.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Logout successful',
@@ -194,7 +216,11 @@ export class AuthController {
    */
   @Get('me')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get current user' })
+  @ApiOperation({
+    summary: 'Get current user',
+    description:
+      '🔒 Requires authentication. Returns authenticated user profile.',
+  })
   @ApiResponse({
     status: 200,
     description: 'Returns current user',
