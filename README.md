@@ -1,10 +1,4 @@
 <div align="center">
-  <a href="https://raw.githubusercontent.com/rifoxide/StackNeverflow/main/docs/media/stackneverflow-demo.mp4">
-    <img src="docs/media/stackneverflow-demo.gif" alt="StackNeverflow product demo — click to watch the full MP4" width="800">
-  </a>
-  <br>
-  <a href="https://raw.githubusercontent.com/rifoxide/StackNeverflow/main/docs/media/stackneverflow-demo.mp4">▶ Watch the full StackNeverflow demo (MP4)</a>
-
   <img src="frontend/public/logo.svg" alt="StackNeverflow Logo" width="150" height="150">
   
   # StackNeverflow
@@ -21,6 +15,16 @@
 - [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) — Phased task breakdown and development checklist.
 - [AI_USAGE.md](AI_USAGE.md) — Comprehensive report on AI tools, agentic workflows, prompt logs, code reviews, and bug fixes.
 - [AGENTS.md](AGENTS.md) — AI agent system context, execution rules, and coding standards.
+
+## Demo
+
+<div align="center">
+  <a href="https://raw.githubusercontent.com/rifoxide/StackNeverflow/main/docs/media/stackneverflow-demo.mp4">
+    <img src="docs/media/stackneverflow-demo.gif" alt="StackNeverflow product demo — click to watch the full MP4" width="800">
+  </a>
+  <br>
+  <a href="https://raw.githubusercontent.com/rifoxide/StackNeverflow/main/docs/media/stackneverflow-demo.mp4">▶ Watch the full StackNeverflow demo (MP4)</a>
+</div>
 
 ## Features
 
