@@ -130,6 +130,15 @@ export function Navbar() {
 
     return (
       <div className="flex items-center gap-2">
+        <Button
+          variant="tertiary"
+          size="sm"
+          isIconOnly
+          onPress={() => setTheme(isDark ? 'light' : 'dark')}
+          aria-label="Toggle theme"
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
         <Button variant="tertiary" size="sm" onPress={() => router.push('/auth/login')}>
           Login
         </Button>
@@ -165,8 +174,8 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="flex items-center gap-6">
-            {isAuthenticated && (
+          {isAuthenticated && (
+            <nav className="flex items-center gap-6">
               <TabsRoot
                 selectedKey={getActiveTab()}
                 onSelectionChange={handleTabChange}
@@ -198,14 +207,8 @@ export function Navbar() {
                   </Tab>
                 </TabList>
               </TabsRoot>
-            )}
-            {!isAuthenticated && (
-              <Link href="/" className="flex items-center gap-2 text-sm font-medium hover:text-[#1877F2] dark:hover:text-[#2D88FF] transition-colors">
-                <Home className="h-4 w-4" />
-                <span>Feed</span>
-              </Link>
-            )}
-          </nav>
+            </nav>
+          )}
 
           {/* Desktop Auth Section */}
           <div className="flex items-center gap-2">
@@ -264,13 +267,6 @@ export function Navbar() {
                 </Tab>
               </TabList>
             </TabsRoot>
-          )}
-
-          {!isAuthenticated && (
-            <Link href="/" className="flex items-center justify-center gap-2 text-sm font-medium bg-gray-100/80 dark:bg-gray-800/80 py-2 px-4 rounded-full text-gray-700 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 transition-all">
-              <Home className="h-4 w-4" />
-              <span>Feed</span>
-            </Link>
           )}
         </div>
       </div>
