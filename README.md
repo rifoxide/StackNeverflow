@@ -1,7 +1,9 @@
 <div align="center">
-  <video src="docs/media/stackneverflow-demo.mp4" controls width="800" aria-label="StackNeverflow product demo">
-    <a href="docs/media/stackneverflow-demo.mp4">Watch the StackNeverflow demo</a>
-  </video>
+  <a href="https://raw.githubusercontent.com/rifoxide/StackNeverflow/main/docs/media/stackneverflow-demo.mp4">
+    <img src="docs/media/stackneverflow-demo.gif" alt="StackNeverflow product demo — click to watch the full MP4" width="800">
+  </a>
+  <br>
+  <a href="https://raw.githubusercontent.com/rifoxide/StackNeverflow/main/docs/media/stackneverflow-demo.mp4">▶ Watch the full StackNeverflow demo (MP4)</a>
 
   <img src="frontend/public/logo.svg" alt="StackNeverflow Logo" width="150" height="150">
   
